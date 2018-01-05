@@ -51,7 +51,10 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public T delete(int index) {
-        throw new NotYetImplementedException();
+//        throw new NotYetImplementedException();
+    		if(index < 0 || index >= this.size) {
+    			throw new IndexOutOfBoundsException();
+    		}
     }
 
     @Override
@@ -61,7 +64,8 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public int size() {
-        throw new NotYetImplementedException();
+//        throw new NotYetImplementedException();
+    		return this.size;
     }
 
     @Override

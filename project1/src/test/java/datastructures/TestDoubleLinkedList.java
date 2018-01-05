@@ -567,4 +567,72 @@ public class TestDoubleLinkedList extends BaseTest {
             count += 2;
         }
     }
+    
+    /* Tests the delete method of the DoubleLinkedList Data Structure */
+    @Test(timeout=1 * SECOND)
+    public void testDelete() {
+    		int errFlag = 0;
+    		
+    		IList<Integer> list = new DoubleLinkedList<>();
+    		
+    		// Do some exception checking
+    		try {
+    			list.delete(-1);
+    		} catch (IndexOutOfBoundsException ex) {
+    			// Do nothing
+    			// This is expected
+    			errFlag = 1;
+    		}
+    		assertEquals(errFlag, 1);
+    		
+    		try {
+    			list.delete(list.size());
+    		} catch (IndexOutOfBoundsException ex) {
+    			// Do nothing
+    			// This is expected
+    			errFlag = 1;
+    		}
+    		assertEquals(errFlag, 1);
+    		
+    		
+    		// Populate the Double Linked List with dummy values from 0 to 4
+    		int testList[] = new int[] {0, 1, 2, 3, 4};
+    		list.add(testList[0]);
+    		list.add(testList[1]);
+    		list.add(testList[2]);
+    		list.add(testList[3]);
+    		list.add(testList[4]);
+    		
+    		// Check edge cases first
+    		// Delete first item and last items and check list afterword
+    		int current = list.delete(0);
+    		assertEquals(current, testList[0]);
+    		assertListMatches(new Integer[] {1, 2, 3, 4}, list);
+    		assertEquals(list.size(), 4);
+    		
+    		current = list.delete(3);
+    		assertEquals(current, testList[4]);
+    		assertListMatches(new Integer[] {1, 2, 3}, list);
+    		assertEquals(list.size(), 3);
+    		
+
+    		
+    		// Test placing 1000 elements into list and then deleting from the middle index
+    		IList<Integer> largeList = new DoubleLinkedList<>();
+    		int maxNum = 1000;
+    		for(int i = 0; i < maxNum; i++) {
+    			largeList.add(i);
+    		}
+    		
+    		int listSize = largeList.size();
+    		while(listSize > 0) {
+    			largeList.delete(listSize / 2);
+    			listSize = largeList.size();
+    		}
+    		assertEquals(largeList.size(), 0);
+    		
+    		
+    		
+    }
+    
 }
