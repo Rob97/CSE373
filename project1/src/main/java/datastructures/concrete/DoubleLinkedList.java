@@ -1,10 +1,12 @@
 package datastructures.concrete;
 
 import datastructures.interfaces.IList;
+import misc.exceptions.EmptyContainerException;
 import misc.exceptions.NotYetImplementedException;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
 
 /**
  * Note: For more info on the expected behavior of your methods, see
@@ -26,27 +28,137 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public void add(T item) {
-        throw new NotYetImplementedException();
+    		if(this.size == 0) {
+    			// If the list currently has nothing in it
+	    		Node<T> newNode = new Node<T>(item);
+	    		this.front = newNode;
+	    		this.back = newNode;
+    		} else {
+    			// If the list has items in it already
+    			Node<T> newNode = new Node<T>(item);
+    			newNode.prev = this.back;	// Set the new Node's prev field to the previous list end
+    			this.back.next = newNode;	// Add a reference from previous end to the new node 
+    			this.back = newNode;			// Set the back of the list to point to the new node
+    		}
+    		
+    		this.size++;						// Increase the size of the list
     }
 
     @Override
     public T remove() {
-        throw new NotYetImplementedException();
+    		Node<T> current;
+	    	if(this.size < 1) {
+	    			throw new EmptyContainerException();
+	    		} else if (this.size == 1) {
+	    			current = this.front;
+	    			this.front = null;
+	    			this.back = null;
+	    		} else {
+	    			current = this.back;			// Set Node to remove to list end
+	    			this.back = current.prev;	// Set new list end to current's previous Node
+	    			this.back.next = null;		// Set new list end's next field to null, as it is now the end of the list
+	    		}
+	    		
+	    	this.size--;							// Decrease the size of the list
+	    	return current.data;
     }
 
     @Override
     public T get(int index) {
-        throw new NotYetImplementedException();
+		Node<T> current = this.front;
+    		if(index < 0 || index >= this.size) {
+			throw new IndexOutOfBoundsException();
+		} else if (this.size < 1) {
+			throw new EmptyContainerException();
+		} else {
+			int curIndex = 0;
+			while(curIndex < index) {
+				current = current.next;
+				curIndex++;
+			}
+		}
+    		return current.data;
     }
 
     @Override
     public void set(int index, T item) {
-        throw new NotYetImplementedException();
+		Node<T> current = this.front;
+		if(index < 0 || index >= this.size) {
+			throw new IndexOutOfBoundsException();
+		} else if (this.size < 1) {
+			throw new EmptyContainerException();
+		} else if (this.size == 1) {							// If there is only one item in the list, switch it out
+			Node<T> newNode = new Node<T>(item);
+			this.front = newNode;
+			this.back = newNode;
+		} else if (index == 0) {								// If we're setting at the beginning of the list
+			Node<T> newNode = new Node<T>(null, item, this.front.next);
+			this.front.next.prev = newNode;
+			this.front = newNode;
+		} else if (index == this.size - 1) {					// If we're setting at the ending of the list
+			Node<T> newNode = new Node<T>(this.back.prev, item, null);
+			this.back.prev.next = newNode;
+			this.back = newNode;
+		} else {												// If we're setting otherwise
+			int curIndex = 0;
+			while(curIndex < index) {
+				current = current.next;
+				curIndex++;
+			}
+			Node<T> newNode = new Node<T>(current.prev, item, current.next);
+			current.prev.next = newNode;
+			current.next.prev = newNode;
+		}
     }
 
     @Override
     public void insert(int index, T item) {
-        throw new NotYetImplementedException();
+    		if(index < 0 || index >= this.size + 1) {
+    			throw new IndexOutOfBoundsException();
+    		} else if (index == 0) {
+    			if(this.size == 0) {
+    				// There is nothing in the list currently
+    				// Add this item as normal
+    				this.add(item);
+    			} else {
+    				// Place this at the front of the list
+    				Node<T> newNode = new Node<T>(null, item, this.front);
+    				this.front.prev = newNode;
+    				this.front = newNode;
+    				this.size++;
+    			}
+    		} else if (index == this.size) {
+    			// Add this item to the end of the list
+    			this.add(item);
+    		} else {
+    			int curIndex;
+    			if(index <= this.size / 2) {
+    			// Start from the beginning if index is closer to the beginning
+    				curIndex = 0;
+    				Node<T> current = this.front;
+    				while(curIndex < index) {
+    					current = current.next;
+    					curIndex++;
+    				}
+    				Node<T> newNode = new Node<T>(current.prev, item, current);
+    				current.prev.next = newNode;
+    				current.prev = newNode;
+    				this.size++;
+    			} else {
+    			// Start from the end if index is closer to the end
+    				curIndex = this.size - 1;
+    				Node<T> current = this.back;
+    				while(curIndex > index) {
+    					current = current.prev;
+    					curIndex--;
+    				}
+    				Node<T> newNode = new Node<T>(current.prev, item, current);
+    				current.prev.next = newNode;
+    				current.prev = newNode;
+    				this.size++;
+    			}
+    		}
+    		
     }
 
     @Override
@@ -54,23 +166,31 @@ public class DoubleLinkedList<T> implements IList<T> {
 //        throw new NotYetImplementedException();
     		if(index < 0 || index >= this.size) {
     			throw new IndexOutOfBoundsException();
+    		} else if (this.size < 1) {
+    			throw new EmptyContainerException();
     		}
     }
 
     @Override
     public int indexOf(T item) {
-        throw new NotYetImplementedException();
+    		int index = -1;
+    		for(int i = 0; i < this.size; i++) {
+    			if(item == get(i)) {
+    				index = i;
+    				break;
+    			}
+    		}
+    		return index;
     }
 
     @Override
     public int size() {
-//        throw new NotYetImplementedException();
     		return this.size;
     }
 
     @Override
     public boolean contains(T other) {
-        throw new NotYetImplementedException();
+    		return (indexOf(other) != -1);
     }
 
     @Override
@@ -115,7 +235,7 @@ public class DoubleLinkedList<T> implements IList<T> {
          * returns 'false' otherwise.
          */
         public boolean hasNext() {
-            throw new NotYetImplementedException();
+            return (current.next != null);
         }
 
         /**
@@ -126,7 +246,12 @@ public class DoubleLinkedList<T> implements IList<T> {
          *         there are no more elements to look at.
          */
         public T next() {
-            throw new NotYetImplementedException();
+            if(current.next == null) {
+            		throw new NoSuchElementException();
+            } else {
+            		current = current.next;
+            		return current.data;
+            }
         }
     }
 }
