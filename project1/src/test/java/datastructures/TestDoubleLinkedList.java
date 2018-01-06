@@ -435,7 +435,7 @@ public class TestDoubleLinkedList extends BaseTest {
         list.add(2);
         list.add(3);
         list.add(4);
-
+        
         assertEquals(-1, list.indexOf(null));
         assertFalse(list.contains(null));
 
@@ -571,6 +571,7 @@ public class TestDoubleLinkedList extends BaseTest {
     /* Tests the delete method of the DoubleLinkedList Data Structure */
     @Test(timeout=1 * SECOND)
     public void testDelete() {
+    	String[] expected = {"a", "b", "c"};
     		int errFlag = 0;
     		
     		IList<Integer> list = new DoubleLinkedList<>();
@@ -595,44 +596,30 @@ public class TestDoubleLinkedList extends BaseTest {
     		assertEquals(errFlag, 1);
     		
     		
-    		// Populate the Double Linked List with dummy values from 0 to 4
-    		int testList[] = new int[] {0, 1, 2, 3, 4};
-    		list.add(testList[0]);
-    		list.add(testList[1]);
-    		list.add(testList[2]);
-    		list.add(testList[3]);
-    		list.add(testList[4]);
+    		IList<String> stringList = this.makeBasicList();
+    		// Test Delete from the beginning
+    		assertListMatches(expected, stringList);
+    		stringList.delete(0);
+    		assertListMatches(new String[] {"b", "c"}, stringList);
+    		stringList.delete(0);
+    		assertListMatches(new String[] {"c"}, stringList);
     		
-    		// Check edge cases first
-    		// Delete first item and last items and check list afterword
-    		int current = list.delete(0);
-    		assertEquals(current, testList[0]);
-    		assertListMatches(new Integer[] {1, 2, 3, 4}, list);
-    		assertEquals(list.size(), 4);
-    		
-    		current = list.delete(3);
-    		assertEquals(current, testList[4]);
-    		assertListMatches(new Integer[] {1, 2, 3}, list);
-    		assertEquals(list.size(), 3);
-    		
-
-    		
-    		// Test placing 1000 elements into list and then deleting from the middle index
-    		IList<Integer> largeList = new DoubleLinkedList<>();
-    		int maxNum = 1000;
-    		for(int i = 0; i < maxNum; i++) {
-    			largeList.add(i);
-    		}
-    		
-    		int listSize = largeList.size();
-    		while(listSize > 0) {
-    			largeList.delete(listSize / 2);
-    			listSize = largeList.size();
-    		}
-    		assertEquals(largeList.size(), 0);
+    		stringList = this.makeBasicList();
+    		// Test delete from the end
+    		assertListMatches(expected, stringList);
+    		stringList.delete(2);
+    		assertListMatches(new String[] {"a", "b"}, stringList);
+    		stringList.delete(1);
+    		assertListMatches(new String[] {"a"}, stringList);
     		
     		
-    		
+    		// Test delete from the middle
+    		stringList = this.makeBasicList();
+    		assertListMatches(expected, stringList);
+    		stringList.delete(1);
+    		assertListMatches(new String[] {"a", "c"}, stringList);
+    		stringList.delete(1);
+    		assertListMatches(new String[] {"a"}, stringList);
     }
     
 }

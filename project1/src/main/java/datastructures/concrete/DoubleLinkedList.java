@@ -2,7 +2,6 @@ package datastructures.concrete;
 
 import datastructures.interfaces.IList;
 import misc.exceptions.EmptyContainerException;
-import misc.exceptions.NotYetImplementedException;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -163,21 +162,71 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public T delete(int index) {
-//        throw new NotYetImplementedException();
     		if(index < 0 || index >= this.size) {
     			throw new IndexOutOfBoundsException();
     		} else if (this.size < 1) {
     			throw new EmptyContainerException();
+    		} else if (index == 0) {
+    			// delete from the front of the list
+    			Node<T> current = this.front;
+    			this.front.next.prev = null;
+    			this.front = this.front.next;
+    			this.size--;
+    			return current.data;
+    		} else if (index == this.size - 1) {
+    			// delete from the end of the list
+    			Node<T> current = this.back;
+    			this.back.prev.next = null;
+    			this.back = this.back.prev;
+    			this.size--;
+    			return current.data;
+    		} else {
+    			int curIndex;
+    			if(index <= this.size / 2) {
+    			// Start from the beginning if index is closer to the beginning
+    				curIndex = 0;
+    				Node<T> current = this.front;
+    				while(curIndex < index) {
+    					current = current.next;
+    					curIndex++;
+    				}
+    				current.prev.next = current.next;
+    				current.next.prev = current.prev;
+    				this.size--;
+    				return current.data;
+    			} else {
+    			// Start from the end if index is closer to the end
+    				curIndex = this.size - 1;
+    				Node<T> current = this.back;
+    				while(curIndex > index) {
+    					current = current.prev;
+    					curIndex--;
+    				}
+    				current.prev.next = current.next;
+    				current.next.prev = current.prev;
+    				this.size--;
+    				return current.data;
+    			}
     		}
+    
     }
 
     @Override
     public int indexOf(T item) {
     		int index = -1;
-    		for(int i = 0; i < this.size; i++) {
-    			if(item == get(i)) {
-    				index = i;
-    				break;
+    		if(null == item) {
+    			for(int i = 0; i < this.size; i++) {
+    				if(get(i) == null) {
+    					index = i;
+    					break;
+    				}
+    			}
+    		} else {
+    			for(int i = 0; i < this.size; i++) {
+    				if(item.equals(get(i))) {
+    					index = i;
+    					break;
+    				}
     			}
     		}
     		return index;
@@ -235,7 +284,7 @@ public class DoubleLinkedList<T> implements IList<T> {
          * returns 'false' otherwise.
          */
         public boolean hasNext() {
-            return (current.next != null);
+        		return (this.current != null);
         }
 
         /**
@@ -246,11 +295,13 @@ public class DoubleLinkedList<T> implements IList<T> {
          *         there are no more elements to look at.
          */
         public T next() {
-            if(current.next == null) {
+            if(this.current == null) {
             		throw new NoSuchElementException();
             } else {
-            		current = current.next;
-            		return current.data;
+        			Node<T> data = this.current;
+            		this.current = this.current.next;
+
+            		return data.data;
             }
         }
     }
