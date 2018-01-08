@@ -27,7 +27,7 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public void add(T item) {
-    		if(this.size == 0) {
+    		if (this.size == 0) {
     			// If the list currently has nothing in it
 	    		Node<T> newNode = new Node<T>(item);
 	    		this.front = newNode;
@@ -46,7 +46,7 @@ public class DoubleLinkedList<T> implements IList<T> {
     @Override
     public T remove() {
     		Node<T> current;
-	    	if(this.size < 1) {
+	    	if (this.size < 1) {
 	    			throw new EmptyContainerException();
 	    		} else if (this.size == 1) {
 	    			current = this.front;
@@ -55,7 +55,8 @@ public class DoubleLinkedList<T> implements IList<T> {
 	    		} else {
 	    			current = this.back;			// Set Node to remove to list end
 	    			this.back = current.prev;	// Set new list end to current's previous Node
-	    			this.back.next = null;		// Set new list end's next field to null, as it is now the end of the list
+	    			// Set new list end's next field to null, as it is now the end of the list
+	    			this.back.next = null;
 	    		}
 	    		
 	    	this.size--;							// Decrease the size of the list
@@ -65,13 +66,13 @@ public class DoubleLinkedList<T> implements IList<T> {
     @Override
     public T get(int index) {
 		Node<T> current = this.front;
-    		if(index < 0 || index >= this.size) {
+    		if (index < 0 || index >= this.size) {
 			throw new IndexOutOfBoundsException();
 		} else if (this.size < 1) {
 			throw new EmptyContainerException();
 		} else {
 			int curIndex = 0;
-			while(curIndex < index) {
+			while (curIndex < index) {
 				current = current.next;
 				curIndex++;
 			}
@@ -82,25 +83,25 @@ public class DoubleLinkedList<T> implements IList<T> {
     @Override
     public void set(int index, T item) {
 		Node<T> current = this.front;
-		if(index < 0 || index >= this.size) {
+		if (index < 0 || index >= this.size) {
 			throw new IndexOutOfBoundsException();
 		} else if (this.size < 1) {
 			throw new EmptyContainerException();
-		} else if (this.size == 1) {							// If there is only one item in the list, switch it out
+		} else if (this.size == 1) {	 // If there is only one item in the list, switch it out
 			Node<T> newNode = new Node<T>(item);
 			this.front = newNode;
 			this.back = newNode;
-		} else if (index == 0) {								// If we're setting at the beginning of the list
+		} else if (index == 0) {	 // If we're setting at the beginning of the list
 			Node<T> newNode = new Node<T>(null, item, this.front.next);
 			this.front.next.prev = newNode;
 			this.front = newNode;
-		} else if (index == this.size - 1) {					// If we're setting at the ending of the list
+		} else if (index == this.size - 1) {	 // If we're setting at the ending of the list
 			Node<T> newNode = new Node<T>(this.back.prev, item, null);
 			this.back.prev.next = newNode;
 			this.back = newNode;
-		} else {												// If we're setting otherwise
+		} else {	 // If we're setting otherwise
 			int curIndex = 0;
-			while(curIndex < index) {
+			while (curIndex < index) {
 				current = current.next;
 				curIndex++;
 			}
@@ -112,10 +113,10 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public void insert(int index, T item) {
-    		if(index < 0 || index >= this.size + 1) {
+    		if (index < 0 || index >= this.size + 1) {
     			throw new IndexOutOfBoundsException();
     		} else if (index == 0) {
-    			if(this.size == 0) {
+    			if (this.size == 0) {
     				// There is nothing in the list currently
     				// Add this item as normal
     				this.add(item);
@@ -131,11 +132,11 @@ public class DoubleLinkedList<T> implements IList<T> {
     			this.add(item);
     		} else {
     			int curIndex;
-    			if(index <= this.size / 2) {
-    			// Start from the beginning if index is closer to the beginning
+    			if (index <= this.size / 2) {
+    		  // Start from the beginning if index is closer to the beginning
     				curIndex = 0;
     				Node<T> current = this.front;
-    				while(curIndex < index) {
+    				while (curIndex < index) {
     					current = current.next;
     					curIndex++;
     				}
@@ -144,10 +145,10 @@ public class DoubleLinkedList<T> implements IList<T> {
     				current.prev = newNode;
     				this.size++;
     			} else {
-    			// Start from the end if index is closer to the end
+    			 // Start from the end if index is closer to the end
     				curIndex = this.size - 1;
     				Node<T> current = this.back;
-    				while(curIndex > index) {
+    				while (curIndex > index) {
     					current = current.prev;
     					curIndex--;
     				}
@@ -162,7 +163,7 @@ public class DoubleLinkedList<T> implements IList<T> {
 
     @Override
     public T delete(int index) {
-    		if(index < 0 || index >= this.size) {
+    		if (index < 0 || index >= this.size) {
     			throw new IndexOutOfBoundsException();
     		} else if (this.size < 1) {
     			throw new EmptyContainerException();
@@ -182,11 +183,11 @@ public class DoubleLinkedList<T> implements IList<T> {
     			return current.data;
     		} else {
     			int curIndex;
-    			if(index <= this.size / 2) {
-    			// Start from the beginning if index is closer to the beginning
+    			if (index <= this.size / 2) {
+    			 // Start from the beginning if index is closer to the beginning
     				curIndex = 0;
     				Node<T> current = this.front;
-    				while(curIndex < index) {
+    				while (curIndex < index) {
     					current = current.next;
     					curIndex++;
     				}
@@ -195,10 +196,10 @@ public class DoubleLinkedList<T> implements IList<T> {
     				this.size--;
     				return current.data;
     			} else {
-    			// Start from the end if index is closer to the end
+    			 // Start from the end if index is closer to the end
     				curIndex = this.size - 1;
     				Node<T> current = this.back;
-    				while(curIndex > index) {
+    				while (curIndex > index) {
     					current = current.prev;
     					curIndex--;
     				}
@@ -214,16 +215,16 @@ public class DoubleLinkedList<T> implements IList<T> {
     @Override
     public int indexOf(T item) {
     		int index = -1;
-    		if(null == item) {
-    			for(int i = 0; i < this.size; i++) {
-    				if(get(i) == null) {
+    		if (null == item) {
+    			for (int i = 0; i < this.size; i++) {
+    				if (get(i) == null) {
     					index = i;
     					break;
     				}
     			}
     		} else {
-    			for(int i = 0; i < this.size; i++) {
-    				if(item.equals(get(i))) {
+    			for (int i = 0; i < this.size; i++) {
+    				if (item.equals(get(i))) {
     					index = i;
     					break;
     				}
@@ -295,7 +296,7 @@ public class DoubleLinkedList<T> implements IList<T> {
          *         there are no more elements to look at.
          */
         public T next() {
-            if(this.current == null) {
+            if (this.current == null) {
             		throw new NoSuchElementException();
             } else {
         			Node<T> data = this.current;

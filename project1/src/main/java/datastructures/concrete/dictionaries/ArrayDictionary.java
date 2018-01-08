@@ -1,7 +1,6 @@
 package datastructures.concrete.dictionaries;
 
 import datastructures.interfaces.IDictionary;
-import misc.exceptions.NotYetImplementedException;
 import misc.exceptions.NoSuchKeyException;
 
 /**
@@ -44,7 +43,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     private void resize() {   
         // make a new array double the size, copy over old KV pairs, and adjust size
         Pair<K, V>[] newPairs = makeArrayOfPairs(this.pairs.length*2);
-        for(int i = 0; i < this.size; i++) {
+        for (int i = 0; i < this.size; i++) {
             newPairs[i] = this.pairs[i];
         }
         this.pairs = newPairs;   
@@ -53,8 +52,8 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     @Override
     public V get(K key) {
         // traverse the array looking for a matching pair
-        for(int i = 0; i < this.size; i++) {
-            if(this.pairs[i].key == key || this.pairs[i].key.equals(key)) {
+        for (int i = 0; i < this.size; i++) {
+            if (this.pairs[i].key == key || this.pairs[i].key.equals(key)) {
                 return this.pairs[i].value;
             }
         }
@@ -66,9 +65,9 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     @Override
     public void put(K key, V value) {
         // if dictionary contains key, find it and overwrite value
-        if(this.containsKey(key)) {
-            for(int i = 0; i < this.size; i++) {
-                if(this.pairs[i].key == key || this.pairs[i].key.equals(key)) {
+        if (this.containsKey(key)) {
+            for (int i = 0; i < this.size; i++) {
+                if (this.pairs[i].key == key || this.pairs[i].key.equals(key)) {
                     this.pairs[i].value = value;
                     return;
                 }
@@ -77,22 +76,22 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
         }
         
         // resize array if full
-        if(this.pairs.length == this.size) {
+        if (this.pairs.length == this.size) {
             this.resize();
         }
         // insert KV pair into next open slot
-        this.pairs[this.size] = new Pair<K, V>(key,value);
+        this.pairs[this.size] = new Pair<K, V>(key, value); 
         this.size++;
     }
 
     @Override
     public V remove(K key) {      
         // traverse pairs to find matching key
-        for(int i = 0; i < this.size; i++) {
-            if(this.pairs[i].key == key || this.pairs[i].key.equals(key)) {           
+        for (int i = 0; i < this.size; i++) {
+            if (this.pairs[i].key == key || this.pairs[i].key.equals(key)) {           
                 V retValue = this.pairs[i].value;
                 // shift all KV pairs to the left
-                while(i < this.size) {
+                while (i < this.size) {
                     this.pairs[i] = this.pairs[i+1];
 
                     i++;
@@ -107,8 +106,8 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     @Override
     public boolean containsKey(K key) {     
         // traverse the array looking for a matching pair
-        for(int i = 0; i < this.size; i++) {
-            if(this.pairs[i].key == key || this.pairs[i].key.equals(key)) {
+        for (int i = 0; i < this.size; i++) {
+            if (this.pairs[i].key == key || this.pairs[i].key.equals(key)) {
                 return true;
             }
         }
