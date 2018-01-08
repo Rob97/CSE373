@@ -2,6 +2,7 @@ package datastructures.concrete.dictionaries;
 
 import datastructures.interfaces.IDictionary;
 import misc.exceptions.NotYetImplementedException;
+import misc.exceptions.NoSuchKeyException;
 
 /**
  * See IDictionary for more details on what this class should do
@@ -10,11 +11,12 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     // You may not change or rename this field: we will be inspecting
     // it using our private tests.
     private Pair<K, V>[] pairs;
-
+    private int size;
     // You're encouraged to add extra fields (and helper methods) though!
 
     public ArrayDictionary() {
-        throw new UnsupportedOperationException();
+        this.pairs = makeArrayOfPairs(8);
+        this.size = 0;
     }
 
     /**
@@ -39,29 +41,84 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 
     }
 
+    private void resize() {   
+        // make a new array double the size, copy over old KV pairs, and adjust size
+        Pair<K, V>[] newPairs = makeArrayOfPairs(this.pairs.length*2);
+        for(int i = 0; i < this.size; i++) {
+            newPairs[i] = this.pairs[i];
+        }
+        this.pairs = newPairs;   
+    }
+    
     @Override
     public V get(K key) {
-        throw new NotYetImplementedException();
+        // traverse the array looking for a matching pair
+        for(int i = 0; i < this.size; i++) {
+            if(this.pairs[i].key == key || this.pairs[i].key.equals(key)) {
+                return this.pairs[i].value;
+            }
+        }
+        // throw exception if key does not exist in dictionary
+        throw new NoSuchKeyException();
+        
     }
 
     @Override
     public void put(K key, V value) {
-        throw new NotYetImplementedException();
+        // if dictionary contains key, find it and overwrite value
+        if(this.containsKey(key)) {
+            for(int i = 0; i < this.size; i++) {
+                if(this.pairs[i].key == key || this.pairs[i].key.equals(key)) {
+                    this.pairs[i].value = value;
+                    return;
+                }
+            }
+            
+        }
+        
+        // resize array if full
+        if(this.pairs.length == this.size) {
+            this.resize();
+        }
+        // insert KV pair into next open slot
+        this.pairs[this.size] = new Pair<K, V>(key,value);
+        this.size++;
     }
 
     @Override
-    public V remove(K key) {
-        throw new NotYetImplementedException();
+    public V remove(K key) {      
+        // traverse pairs to find matching key
+        for(int i = 0; i < this.size; i++) {
+            if(this.pairs[i].key == key || this.pairs[i].key.equals(key)) {           
+                V retValue = this.pairs[i].value;
+                // shift all KV pairs to the left
+                while(i < this.size) {
+                    this.pairs[i] = this.pairs[i+1];
+
+                    i++;
+                }
+                this.size--;
+                return retValue;
+            }
+        }
+        throw new NoSuchKeyException();
     }
 
     @Override
-    public boolean containsKey(K key) {
-        throw new NotYetImplementedException();
+    public boolean containsKey(K key) {     
+        // traverse the array looking for a matching pair
+        for(int i = 0; i < this.size; i++) {
+            if(this.pairs[i].key == key || this.pairs[i].key.equals(key)) {
+                return true;
+            }
+        }
+        // return false, no key found
+        return false;
     }
 
     @Override
     public int size() {
-        throw new NotYetImplementedException();
+        return this.size;
     }
 
     private static class Pair<K, V> {
