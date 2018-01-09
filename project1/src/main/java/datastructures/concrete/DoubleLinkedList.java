@@ -1,10 +1,10 @@
 package datastructures.concrete;
 
 import datastructures.interfaces.IList;
-import misc.exceptions.EmptyContainerException;
-
 import java.util.Iterator;
+
 import java.util.NoSuchElementException;
+import misc.exceptions.EmptyContainerException;
 
 
 /**
