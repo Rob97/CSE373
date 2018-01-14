@@ -1,8 +1,12 @@
 package calculator.ast;
 
 import calculator.interpreter.Environment;
+
+import java.lang.Math;
 import calculator.errors.EvaluationError;
+import datastructures.concrete.DoubleLinkedList;
 import datastructures.interfaces.IDictionary;
+import datastructures.interfaces.IList;
 import misc.exceptions.NotYetImplementedException;
 
 /**
@@ -43,18 +47,43 @@ public class ExpressionManipulators {
     private static double toDoubleHelper(IDictionary<String, AstNode> variables, AstNode node) {
         // There are three types of nodes, so we have three cases.
         if (node.isNumber()) {
-            // TODO: your code here
-            throw new NotYetImplementedException();
+        		// This is a leaf node
+        		// Return the double form of this constant value
+        		return node.getNumericValue();
+        		
         } else if (node.isVariable()) {
-            // TODO: your code here
-            throw new NotYetImplementedException();
+        		// This is a leaf node
+        		if(!variables.containsKey(node.getName())) {
+        			throw new EvaluationError("Undefined Variable: " + node.getName());
+        		} else {
+        			return toDoubleHelper(variables, variables.get(node.getName()));
+        		}
         } else {
-            String name = node.getName();
-
-            // TODO: your code here
-            throw new NotYetImplementedException();
+			String name = node.getName();
+    			IList<AstNode> children = node.getChildren();
+    			switch(name) {
+				case "+":
+					return toDoubleHelper(variables, children.get(0)) + toDoubleHelper(variables, children.get(1));
+				case "-":
+					return toDoubleHelper(variables, children.get(0)) - toDoubleHelper(variables, children.get(1));
+				case "*":
+					return toDoubleHelper(variables, children.get(0))  * toDoubleHelper(variables, children.get(1));
+				case "/":
+					return toDoubleHelper(variables, children.get(0)) / toDoubleHelper(variables, children.get(1));
+				case "negate":
+					return toDoubleHelper(variables, children.get(0)) * -1.0;
+				case "sin":
+					return Math.sin(toDoubleHelper(variables, children.get(0)));
+				case "cos":
+					return Math.cos(toDoubleHelper(variables, children.get(0)));
+				case "^":
+					return Math.pow(toDoubleHelper(variables, children.get(0)), toDoubleHelper(variables, children.get(1)));
+				default:
+					throw new EvaluationError("Unsupported Operation " + name);
+			}
         }
     }
+    
 
     /**
      * Accepts a 'simplify(inner)' AstNode and returns a new node containing the simplified version
@@ -80,14 +109,89 @@ public class ExpressionManipulators {
      * "NUM - NUM", or "NUM * NUM", simplify them.
      */
     public static AstNode handleSimplify(Environment env, AstNode node) {
-        // Try writing this one on your own!
-        // Hint 1: Your code will likely be structured roughly similarly
-        //         to your "handleToDouble" method
-        // Hint 2: When you're implementing constant folding, you may want
-        //         to call your "handleToDouble" method in some way
-
-        // TODO: Your code here
-        throw new NotYetImplementedException();
+    		// Start by first trying to simplify all variables
+    		// Then switch to actual evaluation
+    		node.getChildren().set(0, simplifyVariables(env, node.getChildren().get(0)));
+    		node.getChildren().set(0, simplifyHelper(env, node.getChildren().get(0)));
+    		return node.getChildren().get(0);
+    }
+    
+    private static AstNode simplifyHelper(Environment env, AstNode node) {
+    		if(node.isOperation()) {
+        		// If the node is an operation, we need to check it's type
+        		String name = node.getName();
+        		IList<AstNode> children = node.getChildren();
+        		if(name.equals("-") || name.equals("+") || name.equals("*")) {
+        				if(children.get(0).isNumber() && children.get(1).isNumber()) {
+        					return new AstNode(toDoubleHelper(env.getVariables(), node));
+        				} else {
+                			for(int i = 0; i < children.size(); i++) {
+                				children.set(i, simplifyHelper(env, children.get(i)));
+                			}
+                			return node;
+        				}
+        		} else {
+        			for(int i = 0; i < children.size(); i++) {
+        				children.set(i, simplifyHelper(env, children.get(i)));
+        			}
+        			return node;
+        		}
+        } else {
+        		return node;
+        }
+    	
+    		
+    }
+    
+    /**
+     * 	Iterates through the given tree and simply tries to evaluate each variable
+     *  into a mathematical expression if the variable has been defined already
+     */
+    private static AstNode simplifyVariables(Environment env, AstNode node) {
+		IList<AstNode> children = node.getChildren();	
+    		if(node.isNumber()) {
+    			return node;
+    		} else if (node.isOperation()) {
+    			for(int i = 0; i < children.size(); i++) {
+				children.set(i, simplifyVariables(env, children.get(i)));
+			}
+			return node;
+    		} else {
+    			if(env.getVariables().containsKey(node.getName())) {
+    				AstNode var = env.getVariables().get(node.getName());
+    				IList<AstNode> varChildren = var.getChildren();
+    				
+    				AstNode newNode;
+    				IList<AstNode> newChildren = new DoubleLinkedList<AstNode>();
+    				if(var.isOperation()) {
+    					newNode = new AstNode(var.getName(), newChildren);
+    				} else if (var.isNumber()) {
+    					newNode = new AstNode(var.getNumericValue());
+    				} else {
+    					newNode = new AstNode(var.getName());
+    				}
+    				
+    				
+    				for(int i = 0; i < varChildren.size(); i++) {
+    					if(varChildren.get(i).isNumber()) {
+    						newChildren.add(simplifyVariables(env, new AstNode(varChildren.get(i).getNumericValue())));
+    					} else if (varChildren.get(i).isOperation()) {
+    						newChildren.add(simplifyVariables(env, new AstNode(varChildren.get(i).getName(), varChildren.get(i).getChildren())));
+    					} else {
+    						newChildren.add(simplifyVariables(env, new AstNode(varChildren.get(i).getName())));
+    					}
+    				}
+    				
+    				
+    				
+//    				for(int i = 0; i < varChildren.size(); i++) {
+//    					varChildren.set(i, simplifyVariables(env, varChildren.get(i)));
+//    				}
+    				return newNode;
+    			} else {
+    				return node;
+    			}
+    		}
     }
 
     /**

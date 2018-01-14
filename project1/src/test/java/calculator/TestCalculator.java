@@ -57,6 +57,9 @@ public class TestCalculator extends BaseTest {
         assertEquals("4", calc.evaluate("x := 4"));
         assertEquals("7", calc.evaluate("y"));
         assertEquals("8", calc.evaluate("x := 8"));
+        
+        assertEquals("8", calc.evaluate("x"));
+        
         assertEquals("11", calc.evaluate("y"));
     }
 
@@ -120,6 +123,7 @@ public class TestCalculator extends BaseTest {
             fail("Expected EvaluationError");
         } catch (EvaluationError err) {
             // Do nothing
+        	
         }
 
         try {
