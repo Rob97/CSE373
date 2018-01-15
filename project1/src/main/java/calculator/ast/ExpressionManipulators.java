@@ -2,12 +2,12 @@ package calculator.ast;
 
 import calculator.interpreter.Environment;
 
-import java.lang.Math;
+
 import calculator.errors.EvaluationError;
 import datastructures.concrete.DoubleLinkedList;
 import datastructures.interfaces.IDictionary;
 import datastructures.interfaces.IList;
-import misc.exceptions.NotYetImplementedException;
+
 
 /**
  * All of the static methods in this class are given the exact same parameters for
@@ -40,7 +40,7 @@ public class ExpressionManipulators {
      */
     public static AstNode handleToDouble(Environment env, AstNode node) {
         // To help you get started, we've implemented this method for you.
-        // You should fill in the TODOs in the 'toDoubleHelper' method.
+        // You should fill in the TDOs in the 'toDoubleHelper' method.
         return new AstNode(toDoubleHelper(env.getVariables(), node.getChildren().get(0)));
     }
 
@@ -53,7 +53,7 @@ public class ExpressionManipulators {
         		
         } else if (node.isVariable()) {
         		// This is a leaf node
-        		if(!variables.containsKey(node.getName())) {
+        		if (!variables.containsKey(node.getName())) {
         			throw new EvaluationError("Undefined Variable: " + node.getName());
         		} else {
         			return toDoubleHelper(variables, variables.get(node.getName()));
@@ -117,21 +117,21 @@ public class ExpressionManipulators {
     }
     
     private static AstNode simplifyHelper(Environment env, AstNode node) {
-    		if(node.isOperation()) {
+    		if (node.isOperation()) {
         		// If the node is an operation, we need to check it's type
         		String name = node.getName();
         		IList<AstNode> children = node.getChildren();
-        		if(name.equals("-") || name.equals("+") || name.equals("*")) {
-        				if(children.get(0).isNumber() && children.get(1).isNumber()) {
+        		if (name.equals("-") || name.equals("+") || name.equals("*")) {
+        				if (children.get(0).isNumber() && children.get(1).isNumber()) {
         					return new AstNode(toDoubleHelper(env.getVariables(), node));
         				} else {
-                			for(int i = 0; i < children.size(); i++) {
+                			for (int i = 0; i < children.size(); i++) {
                 				children.set(i, simplifyHelper(env, children.get(i)));
                 			}
                 			return node;
         				}
         		} else {
-        			for(int i = 0; i < children.size(); i++) {
+        			for (int i = 0; i < children.size(); i++) {
         				children.set(i, simplifyHelper(env, children.get(i)));
         			}
         			return node;
@@ -149,21 +149,21 @@ public class ExpressionManipulators {
      */
     private static AstNode simplifyVariables(Environment env, AstNode node) {
 		IList<AstNode> children = node.getChildren();	
-    		if(node.isNumber()) {
+    		if (node.isNumber()) {
     			return node;
     		} else if (node.isOperation()) {
-    			for(int i = 0; i < children.size(); i++) {
+    			for (int i = 0; i < children.size(); i++) {
 				children.set(i, simplifyVariables(env, children.get(i)));
 			}
 			return node;
     		} else {
-    			if(env.getVariables().containsKey(node.getName())) {
+    			if (env.getVariables().containsKey(node.getName())) {
     				AstNode var = env.getVariables().get(node.getName());
     				IList<AstNode> varChildren = var.getChildren();
     				
     				AstNode newNode;
     				IList<AstNode> newChildren = new DoubleLinkedList<AstNode>();
-    				if(var.isOperation()) {
+    				if (var.isOperation()) {
     					newNode = new AstNode(var.getName(), newChildren);
     				} else if (var.isNumber()) {
     					newNode = new AstNode(var.getNumericValue());
@@ -172,8 +172,8 @@ public class ExpressionManipulators {
     				}
     				
     				
-    				for(int i = 0; i < varChildren.size(); i++) {
-    					if(varChildren.get(i).isNumber()) {
+    				for (int i = 0; i < varChildren.size(); i++) {
+    					if (varChildren.get(i).isNumber()) {
     						newChildren.add(simplifyVariables(env, new AstNode(varChildren.get(i).getNumericValue())));
     					} else if (varChildren.get(i).isOperation()) {
     						newChildren.add(simplifyVariables(env, new AstNode(varChildren.get(i).getName(), varChildren.get(i).getChildren())));
@@ -182,11 +182,6 @@ public class ExpressionManipulators {
     					}
     				}
     				
-    				
-    				
-//    				for(int i = 0; i < varChildren.size(); i++) {
-//    					varChildren.set(i, simplifyVariables(env, varChildren.get(i)));
-//    				}
     				return newNode;
     			} else {
     				return node;
@@ -229,8 +224,52 @@ public class ExpressionManipulators {
      * @throws EvaluationError  if 'step' is zero or negative
      */
     public static AstNode plot(Environment env, AstNode node) {
-        // TODO: Your code here
-        throw new NotYetImplementedException();
+
+        IDictionary<String, AstNode> variables = env.getVariables();
+        AstNode expression = node.getChildren().get(0);
+        
+        // get plotting variable
+        String varName = node.getChildren().get(1).getName();
+        
+        // resolve input to doubles
+        Double varMin = toDoubleHelper(variables, node.getChildren().get(2));
+        Double varMax = toDoubleHelper(variables, node.getChildren().get(3));
+        Double varStep = toDoubleHelper(variables, node.getChildren().get(4));
+        
+        // check for evaluation error cases
+        
+        if (varMin > varMax) {
+            throw new EvaluationError("varMin > varMax");
+        }
+        
+        if (varStep <= 0) {
+            throw new EvaluationError("varStep <= 0");
+        }
+        
+        if (variables.containsKey(varName)) {
+            throw new EvaluationError("var '" + varName + "' already defined");
+        }
+        
+        // create the values for plotting
+        IList<Double> xValues = new DoubleLinkedList<Double>();
+        IList<Double> yValues = new DoubleLinkedList<Double>();
+        
+        for (; varMin <= varMax; varMin += varStep) {
+            variables.put(varName, new AstNode(varMin));
+            xValues.add(varMin);
+            yValues.add(toDoubleHelper(variables, expression)); 
+        }
+        
+        // remove the varName from the variables list now
+        if (variables.containsKey(varName)) {
+            variables.remove(varName);
+        }
+        
+        // draw the plot on a panel
+        env.getImageDrawer().drawScatterPlot("Plot", varName, "Output", xValues, yValues);
+        
+        
+        //throw new NotYetImplementedException();
 
         // Note: every single function we add MUST return an
         // AST node that your "simplify" function is capable of handling.
@@ -241,6 +280,6 @@ public class ExpressionManipulators {
         //
         // When working on this method, you should uncomment the following line:
         //
-        // return new AstNode(1);
+        return new AstNode(1);
     }
 }

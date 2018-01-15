@@ -19,7 +19,7 @@ public class SanityCheck {
         // TODO: checkstyle will flag all todos as errors
         ArrayList<String> a = new ArrayList<>();
         a.add("test"); // Deliberately long line: ............................................................................................... end
-        System.out.println( a.isEmpty());
+        System.out.println(a.isEmpty());
 
         System.out.println("Sanity check complete: everything seems to have been configured correctly!");
     }
