@@ -63,6 +63,7 @@ public class ExpressionManipulators {
     			IList<AstNode> children = node.getChildren();
     			switch(name) {
 				case "+":
+<<<<<<< HEAD
 					return toDoubleHelper(variables, children.get(0)) + 
 							toDoubleHelper(variables, children.get(1));
 				case "-":
@@ -74,6 +75,19 @@ public class ExpressionManipulators {
 				case "/":
 					return toDoubleHelper(variables, children.get(0)) / 
 							toDoubleHelper(variables, children.get(1));
+=======
+					return toDoubleHelper(variables, 
+					        children.get(0)) + toDoubleHelper(variables, children.get(1));
+				case "-":
+					return toDoubleHelper(variables, 
+					        children.get(0)) - toDoubleHelper(variables, children.get(1));
+				case "*":
+					return toDoubleHelper(variables, 
+					        children.get(0))  * toDoubleHelper(variables, children.get(1));
+				case "/":
+					return toDoubleHelper(variables, 
+					        children.get(0)) / toDoubleHelper(variables, children.get(1));
+>>>>>>> 6cccd25a54c96be222f7dc77af8039a198d68a54
 				case "negate":
 					return toDoubleHelper(variables, children.get(0)) * -1.0;
 				case "sin":
@@ -81,8 +95,13 @@ public class ExpressionManipulators {
 				case "cos":
 					return Math.cos(toDoubleHelper(variables, children.get(0)));
 				case "^":
+<<<<<<< HEAD
 					return Math.pow(toDoubleHelper(variables, children.get(0)), 
 							toDoubleHelper(variables, children.get(1)));
+=======
+					return Math.pow(toDoubleHelper(variables, 
+					        children.get(0)), toDoubleHelper(variables, children.get(1)));
+>>>>>>> 6cccd25a54c96be222f7dc77af8039a198d68a54
 				default:
 					throw new EvaluationError("Unsupported Operation " + name);
 			}
@@ -180,6 +199,7 @@ public class ExpressionManipulators {
     				for (int i = 0; i < varChildren.size(); i++) {
     					if (varChildren.get(i).isNumber()) {
     						newChildren.add(simplifyVariables(env, 
+<<<<<<< HEAD
     								new AstNode(varChildren.get(i).getNumericValue())));
     					} else if (varChildren.get(i).isOperation()) {
     						newChildren.add(simplifyVariables(env, 
@@ -188,6 +208,16 @@ public class ExpressionManipulators {
     					} else {
     						newChildren.add(simplifyVariables(env, 
     								new AstNode(varChildren.get(i).getName())));
+=======
+    						        new AstNode(varChildren.get(i).getNumericValue())));
+    					} else if (varChildren.get(i).isOperation()) {
+    						newChildren.add(simplifyVariables(env, 
+    						        new AstNode(varChildren.get(i).getName(), 
+    						                varChildren.get(i).getChildren())));
+    					} else {
+    						newChildren.add(simplifyVariables(env, 
+    						        new AstNode(varChildren.get(i).getName())));
+>>>>>>> 6cccd25a54c96be222f7dc77af8039a198d68a54
     					}
     				}
     				
