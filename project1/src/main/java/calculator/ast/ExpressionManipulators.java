@@ -63,13 +63,17 @@ public class ExpressionManipulators {
     			IList<AstNode> children = node.getChildren();
     			switch(name) {
 				case "+":
-					return toDoubleHelper(variables, children.get(0)) + toDoubleHelper(variables, children.get(1));
+					return toDoubleHelper(variables, children.get(0)) + 
+							toDoubleHelper(variables, children.get(1));
 				case "-":
-					return toDoubleHelper(variables, children.get(0)) - toDoubleHelper(variables, children.get(1));
+					return toDoubleHelper(variables, children.get(0)) -
+							toDoubleHelper(variables, children.get(1));
 				case "*":
-					return toDoubleHelper(variables, children.get(0))  * toDoubleHelper(variables, children.get(1));
+					return toDoubleHelper(variables, children.get(0))  * 
+							toDoubleHelper(variables, children.get(1));
 				case "/":
-					return toDoubleHelper(variables, children.get(0)) / toDoubleHelper(variables, children.get(1));
+					return toDoubleHelper(variables, children.get(0)) / 
+							toDoubleHelper(variables, children.get(1));
 				case "negate":
 					return toDoubleHelper(variables, children.get(0)) * -1.0;
 				case "sin":
@@ -77,7 +81,8 @@ public class ExpressionManipulators {
 				case "cos":
 					return Math.cos(toDoubleHelper(variables, children.get(0)));
 				case "^":
-					return Math.pow(toDoubleHelper(variables, children.get(0)), toDoubleHelper(variables, children.get(1)));
+					return Math.pow(toDoubleHelper(variables, children.get(0)), 
+							toDoubleHelper(variables, children.get(1)));
 				default:
 					throw new EvaluationError("Unsupported Operation " + name);
 			}
@@ -174,11 +179,15 @@ public class ExpressionManipulators {
     				
     				for (int i = 0; i < varChildren.size(); i++) {
     					if (varChildren.get(i).isNumber()) {
-    						newChildren.add(simplifyVariables(env, new AstNode(varChildren.get(i).getNumericValue())));
+    						newChildren.add(simplifyVariables(env, 
+    								new AstNode(varChildren.get(i).getNumericValue())));
     					} else if (varChildren.get(i).isOperation()) {
-    						newChildren.add(simplifyVariables(env, new AstNode(varChildren.get(i).getName(), varChildren.get(i).getChildren())));
+    						newChildren.add(simplifyVariables(env, 
+    								new AstNode(varChildren.get(i).getName(),
+    										varChildren.get(i).getChildren())));
     					} else {
-    						newChildren.add(simplifyVariables(env, new AstNode(varChildren.get(i).getName())));
+    						newChildren.add(simplifyVariables(env, 
+    								new AstNode(varChildren.get(i).getName())));
     					}
     				}
     				
