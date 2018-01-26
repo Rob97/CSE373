@@ -567,4 +567,58 @@ public class TestDoubleLinkedList extends BaseTest {
             count += 2;
         }
     }
+    
+    /* Tests the delete method of the DoubleLinkedList Data Structure */
+    @Test(timeout=1 * SECOND)
+    public void testDelete() {
+    	String[] expected = {"a", "b", "c"};
+    		int errFlag = 0;
+    		
+    		IList<Integer> list = new DoubleLinkedList<>();
+    		
+    		// Do some exception checking
+    		try {
+    			list.delete(-1);
+    		} catch (IndexOutOfBoundsException ex) {
+    			// Do nothing
+    			// This is expected
+    			errFlag = 1;
+    		}
+    		assertEquals(errFlag, 1);
+    		
+    		try {
+    			list.delete(list.size());
+    		} catch (IndexOutOfBoundsException ex) {
+    			// Do nothing
+    			// This is expected
+    			errFlag = 1;
+    		}
+    		assertEquals(errFlag, 1);
+    		
+    		
+    		IList<String> stringList = this.makeBasicList();
+    		// Test Delete from the beginning
+    		assertListMatches(expected, stringList);
+    		stringList.delete(0);
+    		assertListMatches(new String[] {"b", "c"}, stringList);
+    		stringList.delete(0);
+    		assertListMatches(new String[] {"c"}, stringList);
+    		
+    		stringList = this.makeBasicList();
+    		// Test delete from the end
+    		assertListMatches(expected, stringList);
+    		stringList.delete(2);
+    		assertListMatches(new String[] {"a", "b"}, stringList);
+    		stringList.delete(1);
+    		assertListMatches(new String[] {"a"}, stringList);
+    		
+    		
+    		// Test delete from the middle
+    		stringList = this.makeBasicList();
+    		assertListMatches(expected, stringList);
+    		stringList.delete(1);
+    		assertListMatches(new String[] {"a", "c"}, stringList);
+    		stringList.delete(1);
+    		assertListMatches(new String[] {"a"}, stringList);
+    }
 }
