@@ -79,12 +79,13 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
     
     private void resize() {
     		// Create a new bucket system that is double the length
-    		IDictionary<K, V>[] newChains = makeArrayOfChains(chains.length * 2);
+    		IDictionary<K, V>[] newChains = makeArrayOfChains(this.chains.length * 2);
     		for (int i = 0; i < chains.length; i++) {
-    			if (!(chains[i] == null)) {
-    		
+    			if (!(this.chains[i] == null)) {
+    				newChains[i] = this.chains[i];
     			}
     		}
+    		this.chains = newChains;
     }
     
     /**

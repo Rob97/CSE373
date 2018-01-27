@@ -56,7 +56,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     
     @Override
     public V get(K key) {
-    		// traverse the array looking for a matching pair
+    		  // traverse the array looking for a matching pair
         for (int i = 0; i < this.size; i++) {
             if (this.pairs[i].key == key || this.pairs[i].key.equals(key)) {
                 return this.pairs[i].value;
