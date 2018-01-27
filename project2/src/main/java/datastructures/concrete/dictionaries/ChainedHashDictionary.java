@@ -2,22 +2,30 @@ package datastructures.concrete.dictionaries;
 
 import datastructures.concrete.KVPair;
 import datastructures.interfaces.IDictionary;
+import misc.exceptions.NoSuchKeyException;
 import misc.exceptions.NotYetImplementedException;
 
 import java.util.Iterator;
+
 
 /**
  * See the spec and IDictionary for more details on what each method should do
  */
 public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
-    // You may not change or rename this field: we will be inspecting
-    // it using our private tests.
-    private IDictionary<K, V>[] chains;
-
-    // You're encouraged to add extra fields (and helper methods) though!
-
+	
+	// Initial # of buckets
+	private final int initialSize = 17;
+	
+	// You may not change or rename this field: we will be inspecting
+	// it using our private tests.
+	private IDictionary<K, V>[] chains;
+    
+    // For determining load factor
+    private int occupancy;
+    
     public ChainedHashDictionary() {
-        throw new NotYetImplementedException();
+        this.chains = makeArrayOfChains(initialSize);
+        this.occupancy = 0;
     }
 
     /**
@@ -36,27 +44,94 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public V get(K key) {
-        throw new NotYetImplementedException();
-    }
+    		// Get the index
+    		int bucketIndex = getHash(key);
+    		if (null == chains[bucketIndex]) {
+    			throw new NoSuchKeyException();
+    		} else if (!chains[bucketIndex].containsKey(key)) {
+    			throw new NoSuchKeyException();
+    		}
+    		return chains[bucketIndex].get(key);
+    	}
 
     @Override
     public void put(K key, V value) {
-        throw new NotYetImplementedException();
+    		if (this.occupancy == chains.length) {
+    			// When our load factor gets to one, resize
+    			this.resize();
+    		}
+    	
+    		// Get the index
+    		int bucketIndex = getHash(key);
+    		
+    		// Now analyze the current state of the bucket
+    		if (null == chains[bucketIndex]) {
+    			// No array dictionary currently exists there
+    			chains[bucketIndex] = new ArrayDictionary<K, V>();
+    		}
+    		
+    		if (!chains[bucketIndex].containsKey(key)) {
+    			this.occupancy++;
+    		}
+    		chains[bucketIndex].put(key, value);
+    
+    }
+    
+    private void resize() {
+    		// Create a new bucket system that is double the length
+    		IDictionary<K, V>[] newChains = makeArrayOfChains(chains.length * 2);
+    		for (int i = 0; i < chains.length; i++) {
+    			if (!(chains[i] == null)) {
+    		
+    			}
+    		}
+    }
+    
+    /**
+     * assigns positive hash value to a key based off of the current number of buckets
+     * assigns a hash value of 0 to null keys
+     * 
+     * @param key
+     * @return the hash value for this specific key
+     */
+    private int getHash(K key) {
+    		int bucketIndex = (null == key) ? 0 : (key.hashCode() % chains.length);
+    		if (bucketIndex < 0) {
+    			bucketIndex *= -1;
+    		}
+    		return bucketIndex;
     }
 
     @Override
     public V remove(K key) {
-        throw new NotYetImplementedException();
+        int bucketIndex = getHash(key);
+		if (null == chains[bucketIndex] || !chains[bucketIndex].containsKey(key)) {
+			throw new NoSuchKeyException();
+		}
+		
+		V var = chains[bucketIndex].remove(key);
+		int dictSize = chains[bucketIndex].size();
+		if (0 == dictSize) {
+			// We'll need to set this index back to null after getting the value
+			chains[bucketIndex] = null;
+		}
+		occupancy--;
+		return var;
     }
 
     @Override
     public boolean containsKey(K key) {
-        throw new NotYetImplementedException();
+        int bucketIndex = getHash(key);
+        if (null == chains[bucketIndex]) {
+        		return false;
+        } else {
+        		return chains[bucketIndex].containsKey(key);
+        }
     }
 
     @Override
     public int size() {
-        throw new NotYetImplementedException();
+        return this.occupancy;
     }
 
     @Override

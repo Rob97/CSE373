@@ -3,6 +3,11 @@ package datastructures.concrete.dictionaries;
 import datastructures.interfaces.IDictionary;
 import misc.exceptions.NoSuchKeyException;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import datastructures.concrete.KVPair;
+
 /**
  * See IDictionary for more details on what this class should do
  */
@@ -51,12 +56,13 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     
     @Override
     public V get(K key) {
-        // traverse the array looking for a matching pair
+    		// traverse the array looking for a matching pair
         for (int i = 0; i < this.size; i++) {
             if (this.pairs[i].key == key || this.pairs[i].key.equals(key)) {
                 return this.pairs[i].value;
             }
         }
+        
         // throw exception if key does not exist in dictionary
         throw new NoSuchKeyException();
         
@@ -105,11 +111,19 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 
     @Override
     public boolean containsKey(K key) {     
-        // traverse the array looking for a matching pair
+        boolean isNull = (null == key);
         for (int i = 0; i < this.size; i++) {
-            if (this.pairs[i].key == key || this.pairs[i].key.equals(key)) {
-                return true;
-            }
+        		if (isNull) {
+        			if (this.pairs[i].key == key) {
+        				return true;
+        			}
+        		} else {
+        			if (this.pairs[i].key != null) {
+        				if (this.pairs[i].key.equals(key)) {
+        					return true;
+        				}
+        			}
+        		}
         }
         // return false, no key found
         return false;
@@ -119,6 +133,11 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     public int size() {
         return this.size;
     }
+    
+	@Override
+	public Iterator<KVPair<K, V>> iterator() {
+		return new ArrayDictionaryIterator<K, V>(this.pairs, this.size);
+	}
 
     private static class Pair<K, V> {
         public K key;
@@ -135,4 +154,41 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
             return this.key + "=" + this.value;
         }
     }
+    
+    private static class ArrayDictionaryIterator<K, V> implements Iterator<KVPair<K, V>> {
+    		private Pair<K, V>[] array;
+        private int nextIndex;
+        private int size;
+
+        public ArrayDictionaryIterator(Pair<K, V>[] array, int size) {
+            this.array = array;
+            this.size = size;
+            this.nextIndex = 0;
+        }
+        /**
+         * Returns 'true' if the iterator still has elements to look at;
+         * returns 'false' otherwise.
+         */
+        public boolean hasNext() {
+			return this.nextIndex < this.size;
+        		
+        }
+        
+        public KVPair<K, V> next() {
+			if (!this.hasNext()) {
+				throw new NoSuchElementException();
+			}
+			
+			Pair<K, V> current = this.array[this.nextIndex];
+			this.nextIndex++;
+			return new KVPair<K, V>(current.key, current.value);
+			
+			
+        	
+        }
+        
+        
+    }
+
+
 }
