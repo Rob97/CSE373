@@ -56,29 +56,23 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     
     @Override
     public V get(K key) {
-    		  // traverse the array looking for a matching pair
-        for (int i = 0; i < this.size; i++) {
-            if (this.pairs[i].key == key || this.pairs[i].key.equals(key)) {
-                return this.pairs[i].value;
-            }
+    		        
+        // traverse the array looking for a matching pair
+        int i = findPairIndex(key);
+        if (i >= 0) {
+            return this.pairs[i].value;
+        } else {
+            throw new NoSuchKeyException();
         }
-        
-        // throw exception if key does not exist in dictionary
-        throw new NoSuchKeyException();
-        
     }
 
     @Override
     public void put(K key, V value) {
         // if dictionary contains key, find it and overwrite value
-        if (this.containsKey(key)) {
-            for (int i = 0; i < this.size; i++) {
-                if (this.pairs[i].key == key || this.pairs[i].key.equals(key)) {
-                    this.pairs[i].value = value;
-                    return;
-                }
-            }
-            
+        int i = findPairIndex(key);
+        if (i >= 0) {
+            this.pairs[i].value = value;
+            return;
         }
         
         // resize array if full
@@ -93,40 +87,37 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     @Override
     public V remove(K key) {      
         // traverse pairs to find matching key
-        for (int i = 0; i < this.size; i++) {
-            if (this.pairs[i].key == key || this.pairs[i].key.equals(key)) {           
-                V retValue = this.pairs[i].value;
-                // shift all KV pairs to the left
-                while (i < this.size) {
-                    this.pairs[i] = this.pairs[i+1];
-
-                    i++;
-                }
-                this.size--;
-                return retValue;
-            }
+        int i = findPairIndex(key);
+        if (i < 0) {
+            throw new NoSuchKeyException();
         }
-        throw new NoSuchKeyException();
+        V retValue = this.pairs[i].value;
+        // shift all KV pairs to the left
+        while (i < this.size) {
+            this.pairs[i] = this.pairs[i+1];
+            i++;
+        }
+        this.size--;
+        return retValue;
+        
     }
 
     @Override
-    public boolean containsKey(K key) {     
-        boolean isNull = (null == key);
+    public boolean containsKey(K key) {       
+        return (findPairIndex(key) != -1); 
+    }
+    
+    private int findPairIndex(K key) {
+        
+        // find the matching pair and return the index
         for (int i = 0; i < this.size; i++) {
-        		if (isNull) {
-        			if (this.pairs[i].key == key) {
-        				return true;
-        			}
-        		} else {
-        			if (this.pairs[i].key != null) {
-        				if (this.pairs[i].key.equals(key)) {
-        					return true;
-        				}
-        			}
-        		}
+            if (java.util.Objects.equals(this.pairs[i].key, key)) {
+                return i;
+            }
         }
-        // return false, no key found
-        return false;
+        
+        // return -1 if no matching pair
+        return -1;
     }
 
     @Override
@@ -182,9 +173,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
 			Pair<K, V> current = this.array[this.nextIndex];
 			this.nextIndex++;
 			return new KVPair<K, V>(current.key, current.value);
-			
-			
-        	
+				
         }
         
         
