@@ -3,9 +3,10 @@ package datastructures.concrete.dictionaries;
 import datastructures.concrete.KVPair;
 import datastructures.interfaces.IDictionary;
 import misc.exceptions.NoSuchKeyException;
-import misc.exceptions.NotYetImplementedException;
+
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 
 /**
@@ -189,19 +190,53 @@ public class ChainedHashDictionary<K, V> implements IDictionary<K, V> {
      */
     private static class ChainedIterator<K, V> implements Iterator<KVPair<K, V>> {
         private IDictionary<K, V>[] chains;
+        int currChain;
+        Iterator<KVPair<K, V>> currIt;
 
         public ChainedIterator(IDictionary<K, V>[] chains) {
             this.chains = chains;
+            this.currChain = -1;
+            moveToNextChain();
+
         }
 
         @Override
         public boolean hasNext() {
-            throw new NotYetImplementedException();
+            if (currIt == null || currChain == chains.length) {
+                return false;
+            } else if (!currIt.hasNext()) {
+                    return moveToNextChain();
+                } else {
+                    return true;
+                }
         }
 
         @Override
         public KVPair<K, V> next() {
-            throw new NotYetImplementedException();
+            if (!this.hasNext()) {
+                throw new NoSuchElementException();
+            } else {
+                return this.currIt.next();
+            }
+            
         }
+        
+        // helper function to automatically find the next 
+        // valid dictionary chain to iterate over
+        // returns true if it successfully moved to a new, valid
+        // chain.
+        private boolean moveToNextChain() {
+            for (int i = currChain + 1; i < chains.length; i++) {
+                if (chains[i] != null && chains[i].size() > 0) {
+                    currChain = i;
+                    currIt = chains[i].iterator();
+                    return true;
+                }
+            }
+            currChain = chains.length;
+            currIt = null;
+            return false;
+        }
+    
     }
 }

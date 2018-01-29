@@ -19,7 +19,7 @@ public class ArrayDictionary<K, V> implements IDictionary<K, V> {
     // You're encouraged to add extra fields (and helper methods) though!
 
     public ArrayDictionary() {
-        this.pairs = makeArrayOfPairs(8);
+        this.pairs = makeArrayOfPairs(32);
         this.size = 0;
     }
 
