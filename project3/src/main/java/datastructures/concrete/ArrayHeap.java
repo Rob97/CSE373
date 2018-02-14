@@ -2,6 +2,7 @@ package datastructures.concrete;
 
 import datastructures.interfaces.IPriorityQueue;
 import misc.exceptions.NotYetImplementedException;
+import misc.exceptions.EmptyContainerException;
 
 /**
  * See IPriorityQueue for details on what each method must do.
@@ -16,9 +17,13 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
     private T[] heap;
 
     // Feel free to add more fields and constants.
+    private static final int INITIAL_SIZE = 8;
+    private int heap_size;
+  
 
     public ArrayHeap() {
-        throw new NotYetImplementedException();
+        heap_size = 0;
+        heap = makeArrayOfT(INITIAL_SIZE);
     }
 
     /**
@@ -39,21 +44,108 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
 
     @Override
     public T removeMin() {
-        throw new NotYetImplementedException();
+        if (this.isEmpty()) {
+            throw new EmptyContainerException();
+        }
+        // get minimum, move last element to top and percolate down
+        T retVal = heap[0];
+        heap[0] = heap[heap_size-1];
+        heap[heap_size] = null;
+        heap_size--;
+        percolateDown(0);
+        return retVal;
+        
     }
 
     @Override
     public T peekMin() {
-        throw new NotYetImplementedException();
+        if (this.isEmpty()) {
+            throw new EmptyContainerException();
+        }
+        return heap[0];
+
     }
 
     @Override
     public void insert(T item) {
-        throw new NotYetImplementedException();
+        if (item == null) {
+            throw new IllegalArgumentException();
+        }
+        
+        if(heap_size == heap.length) {
+            resize();
+        }
+        
+        heap[heap_size] = item;
+        heap_size++;
+        percolateUp(heap_size-1);
     }
 
     @Override
     public int size() {
-        throw new NotYetImplementedException();
+        return heap_size;
+    }
+    
+    // returns the index of the parent of i
+    private int parentOf(int i) {
+        return (i - 1) / NUM_CHILDREN;
+    }
+    
+    // returns the index of jth child of i
+    private int childOf(int i, int j) {
+        return (NUM_CHILDREN*i) + j + 1;
+    }
+    
+    
+    /*Equation for size of array based on levels : 
+     * 1/3[4^(a+1) - 1 ]
+     * 
+     */
+    private void resize() {
+        T[] newHeap = makeArrayOfT(heap.length * 2);
+        for(int i = 0; i < heap_size; i++) {
+            newHeap[i] = heap[i];
+        }
+        heap = newHeap;
+        
+    }
+    
+    private void percolateUp(int i) {
+        int parent_index = parentOf(i);
+        // return if parent is equal to or smaller
+        if (heap[i].compareTo(heap[parent_index]) >= 0)  {
+            return;
+        }
+        //else swap places with parent
+        T swap = heap[parent_index];
+        heap[parent_index] = heap[i];
+        heap[i] = swap;
+        //keep percolatin
+        percolateUp(parent_index);
+    }
+    
+    private void percolateDown(int i) {
+        //if the current node has no children, stop
+        if(childOf(i,0) >= heap_size) {
+            return;
+        }
+        
+        // find the smallest child
+        int small_child = 0;
+        for(int j = 1; (j < NUM_CHILDREN) && (childOf(i,j) < heap_size); j++) {
+            if (heap[childOf(i,small_child)].compareTo(heap[childOf(i,j)]) > 0) {
+                small_child = j;
+            }
+        }
+        
+        int swap_index = childOf(i,small_child);
+        //swap with the smallest child, or not
+        if(heap[i].compareTo(heap[swap_index]) <= 0) {
+            return;
+        }
+        T swap = heap[i];
+        heap[i] = heap[swap_index];
+        heap[swap_index] = swap;
+        percolateDown(swap_index);
     }
 }
