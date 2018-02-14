@@ -7,6 +7,7 @@ import datastructures.concrete.ArrayHeap;
 import datastructures.interfaces.IPriorityQueue;
 import org.junit.Test;
 import misc.exceptions.EmptyContainerException;
+import java.util.*;
 
 /**
  * See spec for details on what kinds of tests this class should include.
@@ -103,4 +104,46 @@ public class TestArrayHeapFunctionality extends BaseTest {
         }
         assertTrue(heap.isEmpty());      
     }
+    
+    @Test(timeout=SECOND)
+    public void testRandomFill() {
+        IPriorityQueue<Integer> heap = this.makeInstance();
+        LinkedList<Integer> testList = new LinkedList<Integer>();
+        Random rand = new Random();
+        for (int i = 0; i < 100; i++) {
+            int n = rand.nextInt(10);
+            testList.add(n);
+            heap.insert(n);
+        }
+        Collections.sort(testList);
+        while(!heap.isEmpty()) {
+            assertEquals(heap.removeMin(),testList.pop());
+        }
+        
+        
+    }
+    
+    @Test(timeout=SECOND)
+    public void testRandomStringFill() {
+        IPriorityQueue<String> heap = this.makeInstance();
+        LinkedList<String> testList = new LinkedList<String>();
+        Random rand = new Random();
+        for (int i = 0; i < 100; i++) {
+            int n = rand.nextInt(100) + 1;
+            
+            String randString = "";
+            for(int j = 0; j < n;j++) {
+                randString += (char)(rand.nextInt(26) + 'a');
+            }
+            heap.insert(randString);
+            testList.add(randString);
+        }
+        Collections.sort(testList);
+        while(!heap.isEmpty()) {
+            assertEquals(heap.removeMin(),testList.pop());
+        }
+        
+        
+    }
+    
 }
