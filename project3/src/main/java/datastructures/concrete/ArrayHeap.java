@@ -1,7 +1,6 @@
 package datastructures.concrete;
 
 import datastructures.interfaces.IPriorityQueue;
-import misc.exceptions.NotYetImplementedException;
 import misc.exceptions.EmptyContainerException;
 
 /**
@@ -50,7 +49,7 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
         // get minimum, move last element to top and percolate down
         T retVal = heap[0];
         heap[0] = heap[heap_size-1];
-        heap[heap_size] = null;
+        heap[heap_size - 1] = null;
         heap_size--;
         percolateDown(0);
         return retVal;
