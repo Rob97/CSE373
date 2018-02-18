@@ -41,21 +41,21 @@ public class TestSortingStress extends BaseTest {
     @Test(timeout = 10 * SECOND)
     public void testLargeArrayHeap() {
     		IPriorityQueue<String> heap = this.makeInstance();
-        LinkedList<String> testList = new LinkedList<String>();
+        List<String> testList = new LinkedList<String>();
         Random rand = new Random();
         for (int i = 0; i < 400000; i++) {
             int n = rand.nextInt(100) + 1;
             
             String randString = "";
-            for(int j = 0; j < n;j++) {
-                randString += (char)(rand.nextInt(26) + 'a');
+            for (int j = 0; j < n; j++) {
+                randString += (char) (rand.nextInt(26) + 'a');
             }
             heap.insert(randString);
             testList.add(randString);
         }
         Collections.sort(testList);
-        while(!heap.isEmpty()) {
-            assertEquals(heap.removeMin(),testList.pop());
+        while (!heap.isEmpty()) {
+            assertEquals(heap.removeMin(), testList.remove(0));
         }
     }
     
@@ -67,7 +67,7 @@ public class TestSortingStress extends BaseTest {
 		IList<Integer> list = new DoubleLinkedList<>();
 		List<Integer> sortList = new ArrayList<>();
 		Random rand = new Random();
-		for(int i = 0; i < 50000; i++) {
+		for (int i = 0; i < 50000; i++) {
 			int n = rand.nextInt(1000);
 			list.add(n);
 			sortList.add(n);
@@ -77,7 +77,7 @@ public class TestSortingStress extends BaseTest {
 		Collections.sort(sortList);
 		
 		assertEquals(top.size(), 1000);
-		for(int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 1000; i++) {
 			assertEquals(top.get(i), sortList.get(i + 49000));
 		}
     }

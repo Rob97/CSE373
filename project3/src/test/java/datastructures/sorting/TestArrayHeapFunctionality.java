@@ -7,7 +7,10 @@ import datastructures.concrete.ArrayHeap;
 import datastructures.interfaces.IPriorityQueue;
 import org.junit.Test;
 import misc.exceptions.EmptyContainerException;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * See spec for details on what kinds of tests this class should include.
@@ -108,7 +111,7 @@ public class TestArrayHeapFunctionality extends BaseTest {
     @Test(timeout=SECOND)
     public void testRandomFill() {
         IPriorityQueue<Integer> heap = this.makeInstance();
-        LinkedList<Integer> testList = new LinkedList<Integer>();
+        List<Integer> testList = new LinkedList<Integer>();
         Random rand = new Random();
         for (int i = 0; i < 100; i++) {
             int n = rand.nextInt(10);
@@ -116,8 +119,8 @@ public class TestArrayHeapFunctionality extends BaseTest {
             heap.insert(n);
         }
         Collections.sort(testList);
-        while(!heap.isEmpty()) {
-            assertEquals(heap.removeMin(), testList.pop());
+        while (!heap.isEmpty()) {
+            assertEquals(heap.removeMin(), testList.remove(0));
         }
         
         
@@ -126,21 +129,21 @@ public class TestArrayHeapFunctionality extends BaseTest {
     @Test(timeout=SECOND)
     public void testRandomStringFill() {
         IPriorityQueue<String> heap = this.makeInstance();
-        LinkedList<String> testList = new LinkedList<String>();
+        List<String> testList = new LinkedList<String>();
         Random rand = new Random();
         for (int i = 0; i < 100; i++) {
             int n = rand.nextInt(100) + 1;
             
             String randString = "";
-            for(int j = 0; j < n;j++) {
-                randString += (char)(rand.nextInt(26) + 'a');
+            for (int j = 0; j < n; j++) {
+                randString += (char) (rand.nextInt(26) + 'a');
             }
             heap.insert(randString);
             testList.add(randString);
         }
         Collections.sort(testList);
-        while(!heap.isEmpty()) {
-            assertEquals(heap.removeMin(), testList.pop());
+        while (!heap.isEmpty()) {
+            assertEquals(heap.removeMin(), testList.remove(0));
         }
         
         
