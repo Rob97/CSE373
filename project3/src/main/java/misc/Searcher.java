@@ -36,7 +36,7 @@ public class Searcher {
     	
     		if (null == input) {
     			throw new NullPointerException();
-    		} else if ((k < 0) || (input.size() == 0) || k > input.size()) {
+    		} else if ((k < 0) || (input.size() == 0)) {
     			throw new IllegalArgumentException();
     		} 
     		
@@ -66,8 +66,15 @@ public class Searcher {
     			}
     		}
     		
-    		for (int i = 0; i < k; i++) {
-    			result.add(heap.removeMin());
+    		boolean flag = (k > input.size());
+    		if (flag) {
+    			for (int i = 0; i < input.size(); i++) {
+    				result.add(heap.removeMin());
+    			}
+    		} else {
+    			for (int i = 0; i < k; i++) {
+    				result.add(heap.removeMin());
+    			}
     		}
     		
     		return result;
