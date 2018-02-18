@@ -80,7 +80,7 @@ public class TestTopKSortFunctionality extends BaseTest {
     		int dummyVal = 5;
     	
     		IList<Integer> list = new DoubleLinkedList<>();
-    		for(int i = 0; i < dummyVal; i++) {
+    		for (int i = 0; i < dummyVal; i++) {
     			list.add(i);
     		}
     		try  {
@@ -93,20 +93,20 @@ public class TestTopKSortFunctionality extends BaseTest {
     @Test(timeout=SECOND)
     public void testListWithDuplicateValues() {
 		IList<Integer> list = new DoubleLinkedList<>();
-		for(int i = 0; i < 20; i++) {
+		for (int i = 0; i < 20; i++) {
 			list.add(i % 4);
 		}
 		
 		IList<Integer> top = Searcher.topKSort(5, list);
 		assertEquals(5, top.size());
-		for(int i = 0; i < 5; i++) {
+		for (int i = 0; i < 5; i++) {
 			assertEquals(3, top.get(i));
 		}
 		
 		top = Searcher.topKSort(10, list);
 		assertEquals(10, top.size());
-		for(int i = 0; i < 10; i++) {
-			if(i > 4) {
+		for (int i = 0; i < 10; i++) {
+			if (i > 4) {
 				assertEquals(3, top.get(i));
 			} else {
 				assertEquals(2, top.get(i));
@@ -122,7 +122,7 @@ public class TestTopKSortFunctionality extends BaseTest {
     		IList<Integer> list = new DoubleLinkedList<>();
     		List<Integer> sortList = new LinkedList<>();
     		Random rand = new Random();
-    		for(int i = 0; i < 1000; i++) {
+    		for (int i = 0; i < 1000; i++) {
     			int n = rand.nextInt(1000);
     			list.add(n);
     			sortList.add(n);
@@ -132,7 +132,7 @@ public class TestTopKSortFunctionality extends BaseTest {
     		Collections.sort(sortList);
     		
     		assertEquals(top.size(), sortList.size());
-    		for(int i = 0; i < 1000; i++) {
+    		for (int i = 0; i < 1000; i++) {
     			assertEquals(top.get(i), sortList.get(i));
     		}
     		
@@ -141,7 +141,7 @@ public class TestTopKSortFunctionality extends BaseTest {
     @Test(timeout=SECOND)
     public void testBasicString() {
     		IList<String> list = new DoubleLinkedList<>();
-    		for(Character c = 'z'; c >= 'a'; c--) {
+    		for (Character c = 'z'; c >= 'a'; c--) {
     			list.add(c.toString());
     		}
     		

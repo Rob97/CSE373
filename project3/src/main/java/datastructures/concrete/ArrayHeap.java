@@ -71,7 +71,7 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
             throw new IllegalArgumentException();
         }
         
-        if(heapSize == heap.length) {
+        if (heapSize == heap.length) {
             resize();
         }
         
@@ -102,7 +102,7 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
      */
     private void resize() {
         T[] newHeap = makeArrayOfT(heap.length * 2);
-        for(int i = 0; i < heapSize; i++) {
+        for (int i = 0; i < heapSize; i++) {
             newHeap[i] = heap[i];
         }
         heap = newHeap;
@@ -110,36 +110,36 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
     }
     
     private void percolateUp(int i) {
-        int parent_index = parentOf(i);
+        int parentIndex = parentOf(i);
         // return if parent is equal to or smaller
-        if (heap[i].compareTo(heap[parent_index]) >= 0)  {
+        if (heap[i].compareTo(heap[parentIndex]) >= 0)  {
             return;
         }
         //else swap places with parent
-        T swap = heap[parent_index];
-        heap[parent_index] = heap[i];
+        T swap = heap[parentIndex];
+        heap[parentIndex] = heap[i];
         heap[i] = swap;
         //keep percolatin
-        percolateUp(parent_index);
+        percolateUp(parentIndex);
     }
     
     private void percolateDown(int i) {
         //if the current node has no children, stop
-        if(childOf(i,0) >= heapSize) {
+        if (childOf(i, 0) >= heapSize) {
             return;
         }
         
         // find the smallest child
         int smallChild = 0;
-        for(int j = 1; (j < NUM_CHILDREN) && (childOf(i,j) < heapSize); j++) {
-            if (heap[childOf(i,smallChild)].compareTo(heap[childOf(i,j)]) > 0) {
+        for (int j = 1; (j < NUM_CHILDREN) && (childOf(i, j) < heapSize); j++) {
+            if (heap[childOf(i, smallChild)].compareTo(heap[childOf(i, j)]) > 0) {
                 smallChild = j;
             }
         }
         
-        int swapIndex = childOf(i,smallChild);
+        int swapIndex = childOf(i, smallChild);
         //swap with the smallest child, or not
-        if(heap[i].compareTo(heap[swapIndex]) <= 0) {
+        if (heap[i].compareTo(heap[swapIndex]) <= 0) {
             return;
         }
         T swap = heap[i];
