@@ -35,16 +35,16 @@ public class TestArrayHeapFunctionality extends BaseTest {
         heap.insert(0);
         heap.insert(5);
         
-        assertEquals(4,heap.size()); //check that duplicates arent erased
+        assertEquals(4, heap.size()); //check that duplicates arent erased
         
-        assertEquals(-1,heap.peekMin()); //check negative numbers are properly handled
-        assertEquals(-1,heap.peekMin()); //check peekMin doesnt remove values
+        assertEquals(-1, heap.peekMin()); //check negative numbers are properly handled
+        assertEquals(-1, heap.peekMin()); //check peekMin doesnt remove values
         
         //check proper ordering
-        assertEquals(-1,heap.removeMin()); 
-        assertEquals(0,heap.removeMin());
-        assertEquals(0,heap.removeMin());
-        assertEquals(5,heap.removeMin());
+        assertEquals(-1, heap.removeMin()); 
+        assertEquals(0, heap.removeMin());
+        assertEquals(0, heap.removeMin());
+        assertEquals(5, heap.removeMin());
     }
 
     
@@ -95,11 +95,11 @@ public class TestArrayHeapFunctionality extends BaseTest {
             }
         }
         
-        assertEquals(heap.size(),size);
+        assertEquals(heap.size(), size);
         
         for (int i = 1; i < 10; i++) {
             for (int j = 0; j < i; j++) {
-                assertEquals(i,heap.removeMin());
+                assertEquals(i, heap.removeMin());
             }
         }
         assertTrue(heap.isEmpty());      
@@ -117,7 +117,7 @@ public class TestArrayHeapFunctionality extends BaseTest {
         }
         Collections.sort(testList);
         while(!heap.isEmpty()) {
-            assertEquals(heap.removeMin(),testList.pop());
+            assertEquals(heap.removeMin(), testList.pop());
         }
         
         
@@ -140,7 +140,7 @@ public class TestArrayHeapFunctionality extends BaseTest {
         }
         Collections.sort(testList);
         while(!heap.isEmpty()) {
-            assertEquals(heap.removeMin(),testList.pop());
+            assertEquals(heap.removeMin(), testList.pop());
         }
         
         
