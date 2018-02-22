@@ -24,17 +24,17 @@ public class TestSortingStress extends BaseTest {
         return new ArrayHeap<>();
     }
 	
-	@Test(timeout = 20 * SECOND)
+	@Test(timeout = 10 * SECOND)
     public void testLargeListSort() {
     	IList<Integer> list = new DoubleLinkedList<>();
-    		for (int i = 100000; i > 0; i--) {
+    		for (int i = 400000; i > 0; i--) {
     			list.add(i);
     		}
     		
     		IList<Integer> top = Searcher.topKSort(1000, list);
     		assertEquals(1000, top.size());
     		for (int i = 0; i < 1000; i++) {
-    			assertEquals(top.get(i), 99000 + i + 1);
+    			assertEquals(top.get(i), 399000 + i + 1);
     		}
     }
     

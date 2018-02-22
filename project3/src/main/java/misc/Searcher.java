@@ -49,8 +49,7 @@ public class Searcher {
     			return result;
     		}
     		
-    		for (int i = 0; i < input.size(); i++) {
-    			T item = input.get(i);
+    		for (T item : input) {
     			if (heap.size() < k) {
     				// Add the first K elements of the list into the ArrayHeap
     				heap.insert(item);
