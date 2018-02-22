@@ -43,6 +43,7 @@ public class TfIdfAnalyzer {
     		this.numPages = (double) webpages.size();
         this.idfScores = this.computeIdfScores(webpages);
         this.documentTfIdfVectors = this.computeAllDocumentTfIdfVectors(webpages);
+   
     }
 
     // Note: this method, strictly speaking, doesn't need to exist. However,

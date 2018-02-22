@@ -34,12 +34,9 @@ public class TestTopKSortFunctionality extends BaseTest {
     @Test(timeout=SECOND)
     public void testEmptyList() {
     		IList<Integer> list = new DoubleLinkedList<>();
-   
-    		try  {
-    			Searcher.topKSort(5, list);
-        } catch (IllegalArgumentException ex) {
-        		// This is good
-        }
+    		IList<Integer> top = Searcher.topKSort(5, list);
+    		assertEquals(top.size(), 0);
+
     }
     
     

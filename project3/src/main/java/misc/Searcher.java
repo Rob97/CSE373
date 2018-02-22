@@ -36,9 +36,9 @@ public class Searcher {
     	
     		if (null == input) {
     			throw new NullPointerException();
-    		} else if ((k < 0) || (input.size() == 0)) {
+    		} else if (k < 0) {
     			throw new IllegalArgumentException();
-    		} 
+    		}
     		
     		IPriorityQueue<T> heap = new ArrayHeap<T>();
     		IList<T> result = new DoubleLinkedList<T>();
