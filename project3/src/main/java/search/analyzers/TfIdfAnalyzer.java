@@ -33,16 +33,16 @@ public class TfIdfAnalyzer {
     // Feel free to add extra fields and helper methods.
 
     public TfIdfAnalyzer(ISet<Webpage> webpages) {
-        // Implementation note: We have commented these method calls out so your
-        // search engine doesn't immediately crash when you try running it for the
-        // first time.
-        //
-        // You should uncomment these lines when you're ready to begin working
-           // on this class.
-    	    
-    		this.numPages = (double) webpages.size();
-        this.idfScores = this.computeIdfScores(webpages);
-        this.documentTfIdfVectors = this.computeAllDocumentTfIdfVectors(webpages);
+		// Implementation note: We have commented these method calls out so your
+		// search engine doesn't immediately crash when you try running it for the
+		// first time.
+		//
+		// You should uncomment these lines when you're ready to begin working
+		// on this class.
+		
+		this.numPages = (double) webpages.size();
+		this.idfScores = this.computeIdfScores(webpages);
+		this.documentTfIdfVectors = this.computeAllDocumentTfIdfVectors(webpages);
    
     }
 
@@ -137,21 +137,22 @@ public class TfIdfAnalyzer {
      * See spec for more details on what this method should do.
      */
     private IDictionary<URI, IDictionary<String, Double>> computeAllDocumentTfIdfVectors(ISet<Webpage> pages) {
-        // Hint: this method should use the idfScores field and
-        // call the computeTfScores(...) method.
-    		
-    		IDictionary<URI, IDictionary<String, Double>> result = new ChainedHashDictionary<>();
-    		
-    		
+		// Hint: this method should use the idfScores field and
+		// call the computeTfScores(...) method.
+		
+		IDictionary<URI, IDictionary<String, Double>> result = new ChainedHashDictionary<>();
+		
+
     		for (Webpage page : pages) {
     			// Get the TF scores for the page
-    			IDictionary<String, Double> TFscores = computeTfScores(page.getWords());
+    			IDictionary<String, Double> tfScores = computeTfScores(page.getWords());
     			IDictionary<String, Double> vectors = new ChainedHashDictionary<>();
     			
     			// Iterate through the TF scores and add all words to 
     			// the TFIDF vectors set with their TF * IDF
-    			for (KVPair<String, Double> word : TFscores) {
-    				vectors.put(word.getKey(), TFscores.get(word.getKey()) * this.idfScores.get(word.getKey()));
+    			for (KVPair<String, Double> word : tfScores) {
+    				vectors.put(word.getKey(), tfScores.get(word.getKey()) 
+    						* this.idfScores.get(word.getKey()));
     			}
     			
     			
@@ -180,34 +181,34 @@ public class TfIdfAnalyzer {
      *               webpages given to the constructor.
      */
     public Double computeRelevance(IList<String> query, URI pageUri) {
-        // Note: The pseudocode we gave you is not very efficient. When implementing,
-        // this method, you should:
-        //
-        // 1. Figure out what information can be precomputed in your constructor.
-        //    Add a third field containing that information.
-        //
-        // 2. See if you can combine or merge one or more loops.
-    	
-    		// Find Tf-idf for the document
-    		IDictionary<String, Double> IDFvalDoc = this.documentTfIdfVectors.get(pageUri);
-    		IDictionary<String, Double> TFvalQuery = this.computeTfScores(query);
+		// Note: The pseudocode we gave you is not very efficient. When implementing,
+		// this method, you should:
+		//
+		// 1. Figure out what information can be precomputed in your constructor.
+		//    Add a third field containing that information.
+		//
+		// 2. See if you can combine or merge one or more loops.
+		
+		// Find Tf-idf for the document
+		IDictionary<String, Double> idfvalDoc = this.documentTfIdfVectors.get(pageUri);
+		IDictionary<String, Double> tfvalQuery = this.computeTfScores(query);
     		
     		double numerator = 0.0;
-        IDictionary<String, Double> TFIDFvalQuery = new ChainedHashDictionary<>();
+        IDictionary<String, Double> tfidfvalQuery = new ChainedHashDictionary<>();
         for (String word : query) {
-        		double docScore = (IDFvalDoc.containsKey(word)) ? IDFvalDoc.get(word) : 0;
-        		if(this.idfScores.containsKey(word)) {
-        			TFIDFvalQuery.put(word, this.idfScores.get(word) * TFvalQuery.get(word));
-        			numerator += (TFIDFvalQuery.get(word) * docScore);
+        		double docScore = (idfvalDoc.containsKey(word)) ? idfvalDoc.get(word) : 0;
+        		if (this.idfScores.containsKey(word)) {
+        			tfidfvalQuery.put(word, this.idfScores.get(word) * tfvalQuery.get(word));
+        			numerator += (tfidfvalQuery.get(word) * docScore);
         		} else {
-        			TFIDFvalQuery.put(word, 0.0);
+        			tfidfvalQuery.put(word, 0.0);
         		}
         }
     		
-        double denominator = norm( (ChainedHashDictionary<String, Double>) IDFvalDoc) * 
-        		norm( (ChainedHashDictionary<String, Double>) TFIDFvalQuery);
+        double denominator = norm((ChainedHashDictionary<String, Double>) idfvalDoc) * 
+        		norm((ChainedHashDictionary<String, Double>) tfidfvalQuery);
         
-        if(denominator != 0.0) {
+        if (denominator != 0.0) {
         		return numerator / denominator;
         }
         return 0.0;
