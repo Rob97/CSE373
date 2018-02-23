@@ -38,7 +38,7 @@ public class TfIdfAnalyzer {
         // first time.
         //
         // You should uncomment these lines when you're ready to begin working
-        // on this class.
+           // on this class.
     	    
     		this.numPages = (double) webpages.size();
         this.idfScores = this.computeIdfScores(webpages);

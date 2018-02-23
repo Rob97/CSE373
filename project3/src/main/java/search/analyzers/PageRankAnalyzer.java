@@ -83,7 +83,7 @@ public class PageRankAnalyzer {
                 }
             }
 
-           // add our built vertex to the graph
+            // add our built vertex to the graph
             graph.put(pageURI, pageEdges);  
         }
         
@@ -108,10 +108,10 @@ public class PageRankAnalyzer {
                                                    int limit,
                                                    double epsilon) {
         // Step 1: The initialize step should go here
-        IDictionary<URI, Double> pageRanks = new ChainedHashDictionary<URI, Double>();
+        IDictionary<URI, Double> oldPageRanks = new ChainedHashDictionary<URI, Double>();
         Double initRank = 1.0/graph.size();
         for (KVPair<URI, ISet<URI>> vertexPair : graph) {
-            pageRanks.put(vertexPair.getKey(), initRank);
+            oldPageRanks.put(vertexPair.getKey(), initRank);
         }
         
         // now go through updating
@@ -131,14 +131,14 @@ public class PageRankAnalyzer {
                 ISet<URI> vertexLinks = vertexPair.getValue();
                 int numUniqueLinks = vertexLinks.size();
                 
-                if(numUniqueLinks == 0) {
+                if (numUniqueLinks == 0) {
                     for (KVPair<URI, ISet<URI>> graphPair : graph) {
                         URI pageURI = graphPair.getKey();
-                        Double rankStep = decay * pageRanks.get(vertexURI) / graph.size();
+                        Double rankStep = decay * oldPageRanks.get(vertexURI) / graph.size();
                         newPageRanks.put(pageURI, newPageRanks.get(pageURI) + rankStep);
                     }
                 } else {  
-                    Double rankStep = decay * pageRanks.get(vertexURI) / numUniqueLinks;
+                    Double rankStep = decay * oldPageRanks.get(vertexURI) / numUniqueLinks;
                     for (URI link : vertexLinks) {
                         newPageRanks.put(link, newPageRanks.get(link) + rankStep);
                     }
@@ -150,7 +150,7 @@ public class PageRankAnalyzer {
             Boolean converged = true;
             for (KVPair<URI, ISet<URI>> vertexPair : graph) {
                 URI pageURI = vertexPair.getKey();
-                double diff = Math.abs(newPageRanks.get(pageURI) - pageRanks.get(pageURI));
+                double diff = Math.abs(newPageRanks.get(pageURI) - oldPageRanks.get(pageURI));
                 
                 if (diff >= epsilon) {
                     converged = false;
@@ -158,13 +158,13 @@ public class PageRankAnalyzer {
                 } 
             }
             
-            if(converged) {
+            if (converged) {
                 return newPageRanks;
             } else {
-                pageRanks = newPageRanks;
+                oldPageRanks = newPageRanks;
             }
         }
-        return pageRanks;
+        return oldPageRanks;
     }
 
     /**
@@ -175,6 +175,6 @@ public class PageRankAnalyzer {
      */
     public double computePageRank(URI pageUri) {
         // Implementation note: this method should be very simple: just one line!
-        return pageRanks.get(pageUri);
+        return this.pageRanks.get(pageUri);
     }
 }
