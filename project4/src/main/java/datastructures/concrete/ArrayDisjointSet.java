@@ -1,9 +1,10 @@
 package datastructures.concrete;
 
-import datastructures.concrete.dictionaries.ArrayDictionary;
+
+import datastructures.concrete.dictionaries.ChainedHashDictionary;
 import datastructures.interfaces.IDictionary;
 import datastructures.interfaces.IDisjointSet;
-import misc.exceptions.NotYetImplementedException;
+
 
 /**
  * See IDisjointSet for more details.
@@ -22,7 +23,7 @@ public class ArrayDisjointSet<T> implements IDisjointSet<T> {
 
     public ArrayDisjointSet() {
         this.size = 0;
-        this.map = new ArrayDictionary<T, Integer>();
+        this.map = new ChainedHashDictionary<T, Integer>();
         this.pointers = new int[INITIAL_SIZE];
     }
 
