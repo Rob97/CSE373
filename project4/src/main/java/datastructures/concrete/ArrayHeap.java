@@ -1,5 +1,7 @@
 package datastructures.concrete;
 
+import java.util.NoSuchElementException;
+
 import datastructures.interfaces.IPriorityQueue;
 import misc.exceptions.EmptyContainerException;
 
@@ -83,6 +85,33 @@ public class ArrayHeap<T extends Comparable<T>> implements IPriorityQueue<T> {
     @Override
     public int size() {
         return heapSize;
+    }
+    
+    @Override
+    public void remove(T item) {
+        
+        if (item == null) {
+            throw new NoSuchElementException();
+        }
+        int itemIndex = -1;
+        // find the item
+        for (int i = 0; i < heapSize;i++) {
+            if(heap[i].equals(item)) {
+                itemIndex = i;
+                break;
+            }
+        }
+        
+        // error if item not in heap
+        if (itemIndex < 0) {
+            throw new NoSuchElementException();
+        }
+        
+        // remove item, replace with last item and percolate down
+        heap[itemIndex] = heap[heapSize-1];
+        heap[heapSize - 1] = null;
+        heapSize--;
+        percolateDown(itemIndex);
     }
     
     // returns the index of the parent of i

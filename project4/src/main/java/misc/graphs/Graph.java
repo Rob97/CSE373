@@ -1,7 +1,14 @@
 package misc.graphs;
 
+import datastructures.concrete.ArrayHeap;
+import datastructures.concrete.ChainedHashSet;
 import datastructures.concrete.DoubleLinkedList;
+import datastructures.concrete.KVPair;
+import datastructures.concrete.dictionaries.ArrayDictionary;
+import datastructures.concrete.dictionaries.ChainedHashDictionary;
+import datastructures.interfaces.IDictionary;
 import datastructures.interfaces.IList;
+import datastructures.interfaces.IPriorityQueue;
 import datastructures.interfaces.ISet;
 import misc.exceptions.NoPathExistsException;
 import misc.exceptions.NotYetImplementedException;
@@ -59,8 +66,29 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
      * @throws IllegalArgumentException  if one of the edges connects to a vertex not
      *                                   present in the 'vertices' list
      */
+    
+    private IDictionary<V,IList<E>> ajList;
+    private int numVertices;
+    private int numEdges;
+    
     public Graph(IList<V> vertices, IList<E> edges) {
-        // TODO: Your code here
+       
+        numVertices = vertices.size();
+        numEdges = edges.size();
+        ajList = new ArrayDictionary<V,IList<E>>();
+        for (V vertex : vertices) {
+            ajList.put(vertex, new DoubleLinkedList<E>());
+        }
+        
+        for (E edge : edges) {
+            if(edge.getWeight() >= 0 
+                    && ajList.containsKey(edge.getVertex1()) 
+                    && ajList.containsKey(edge.getVertex2())) {
+                ajList.get(edge.getVertex1()).add(edge);
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
     }
 
     /**
@@ -73,6 +101,7 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
         this(setToList(vertices), setToList(edges));
     }
 
+    
     // You shouldn't need to call this helper method -- it only needs to be used
     // in the constructor above.
     private static <T> IList<T> setToList(ISet<T> set) {
@@ -87,14 +116,14 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
      * Returns the number of vertices contained within this graph.
      */
     public int numVertices() {
-        throw new NotYetImplementedException();
+        return this.numVertices;
     }
 
     /**
      * Returns the number of edges contained within this graph.
      */
     public int numEdges() {
-        throw new NotYetImplementedException();
+        return this.numEdges;
     }
 
     /**
@@ -123,5 +152,67 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
      */
     public IList<E> findShortestPathBetween(V start, V end) {
         throw new NotYetImplementedException();
+        IList<E> returnPath = new DoubleLinkedList<E>();
+        IList<V> visited = new DoubleLinkedList<V>();
+        IDictionary<V,VertexInfo> vInfos = new ArrayDictionary<V,VertexInfo>(); 
+        IPriorityQueue<VertexInfo> vQueue = new ArrayHeap<VertexInfo>();
+        
+        if(start == end) {
+            return returnPath;
+        }
+        
+        for (KVPair<V, IList<E>> pair : ajList) {
+            V vertex = pair.getKey();
+            VertexInfo info = new VertexInfo(null,Double.POSITIVE_INFINITY);
+            vInfos.put(vertex, info);
+            vQueue.insert(info);
+        }
+        //Keep Track of Vertices with their costs and return path
+        //Keep Track of known Vertices
+        
+        V current = start;
+        while(visited.size() < numVertices()) {
+            //update costs of current's children
+            //add updated children to vQueue (remove and re-add)
+            //Get next vertex to visit from vQueue, break if next lowest is infinity, or already visited
+        }
+        
+        //build the list for the return path, if it was found
+        
+        
+        return returnPath;
     }
+    
+    // stores the cost and path for a vertex
+    private class VertexInfo implements Comparable<VertexInfo> {
+        private E path;
+        private Double cost;
+        
+        
+        VertexInfo(E path,Double cost) {
+            this.path = path;
+            this.cost = cost;
+        }
+        
+        public E getPath() {
+            return this.path;
+        }
+        public void setPath(E path) {
+            this.path = path;
+        }
+        
+        public Double getCost() {
+            return this.cost;
+        }
+        
+        public void setCost(Double cost) {
+            this.cost = cost;
+        }
+        
+        @Override
+        public int compareTo(VertexInfo o) {
+            return Double.compare(this.cost, o.cost);
+        }
+    }
+    
 }
