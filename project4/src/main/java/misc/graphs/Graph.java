@@ -1,5 +1,6 @@
 package misc.graphs;
 
+import datastructures.concrete.ArrayDisjointSet;
 import datastructures.concrete.ArrayHeap;
 import datastructures.concrete.ChainedHashSet;
 import datastructures.concrete.DoubleLinkedList;
@@ -7,9 +8,11 @@ import datastructures.concrete.KVPair;
 import datastructures.concrete.dictionaries.ArrayDictionary;
 import datastructures.concrete.dictionaries.ChainedHashDictionary;
 import datastructures.interfaces.IDictionary;
+import datastructures.interfaces.IDisjointSet;
 import datastructures.interfaces.IList;
 import datastructures.interfaces.IPriorityQueue;
 import datastructures.interfaces.ISet;
+import misc.Searcher;
 import misc.exceptions.NoPathExistsException;
 import misc.exceptions.NotYetImplementedException;
 
@@ -70,25 +73,29 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
     private IDictionary<V,IList<E>> ajList;
     private int numVertices;
     private int numEdges;
+    private IList<E> sortedEdges;
     
     public Graph(IList<V> vertices, IList<E> edges) {
        
-        numVertices = vertices.size();
-        numEdges = edges.size();
-        ajList = new ArrayDictionary<V,IList<E>>();
+        this.numVertices = vertices.size();
+        this.numEdges = edges.size();
+        this.ajList = new ArrayDictionary<V,IList<E>>();
         for (V vertex : vertices) {
             ajList.put(vertex, new DoubleLinkedList<E>());
         }
         
         for (E edge : edges) {
-            if(edge.getWeight() >= 0 
-                    && ajList.containsKey(edge.getVertex1()) 
-                    && ajList.containsKey(edge.getVertex2())) {
-                ajList.get(edge.getVertex1()).add(edge);
+            if (edge.getWeight() >= 0 
+                    && this.ajList.containsKey(edge.getVertex1()) 
+                    && this.ajList.containsKey(edge.getVertex2())) {
+                this.ajList.get(edge.getVertex1()).add(edge);
             } else {
                 throw new IllegalArgumentException();
             }
         }
+        
+        // Store a sorted version of the edges for later use
+        this.sortedEdges = Searcher.topKSort(edges.size(), edges); 
     }
 
     /**
@@ -135,7 +142,28 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
      * Precondition: the graph does not contain any unconnected components.
      */
     public ISet<E> findMinimumSpanningTree() {
-        throw new NotYetImplementedException();
+        ISet<E> result = new ChainedHashSet<E>();
+        IDisjointSet<V> msts = new ArrayDisjointSet<V>();
+        
+        // Add all vertices in the graph to an array disjoint set
+        // As their own minimum spanning tree
+        for (KVPair<V, IList<E>> vertex : this.ajList) {
+        		msts.makeSet(vertex.getKey());
+        }
+        
+        // Iterate through sorted ascending edge weights
+        // and union the MSTs if they do not currently belong
+        // to an MST
+        for (E edge : this.sortedEdges) {
+        		V v1 = edge.getVertex1();
+        		V v2 = edge.getVertex2();
+        		if (msts.findSet(v1) != msts.findSet(v2)) {
+        			msts.union(v1, v2);
+        			result.add(edge);
+        		}
+        }
+        
+        return result;
     }
 
     /**
@@ -163,7 +191,7 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
         
         for (KVPair<V, IList<E>> pair : ajList) {
             V vertex = pair.getKey();
-            VertexInfo info = new VertexInfo(null,Double.POSITIVE_INFINITY);
+            VertexInfo info = new VertexInfo(null, Double.POSITIVE_INFINITY);
             vInfos.put(vertex, info);
             vQueue.insert(info);
         }
