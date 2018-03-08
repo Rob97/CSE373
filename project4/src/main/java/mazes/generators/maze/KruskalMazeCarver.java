@@ -2,8 +2,10 @@ package mazes.generators.maze;
 
 import datastructures.interfaces.ISet;
 import mazes.entities.Maze;
+import mazes.entities.Room;
 import mazes.entities.Wall;
-import misc.exceptions.NotYetImplementedException;
+import java.util.Random;
+import misc.graphs.Graph;
 
 /**
  * Carves out a maze based on Kruskal's algorithm.
@@ -18,6 +20,26 @@ public class KruskalMazeCarver implements MazeCarver {
         // In particular, if you call 'wall.setDistance()' at any point, make sure to
         // call 'wall.resetDistanceToOriginal()' on the same wall before returning.
 
-        throw new NotYetImplementedException();
+    		ISet<Room> rooms = maze.getRooms();
+    		ISet<Wall> walls = maze.getWalls();
+    		
+    		Random rand = new Random();
+    		
+    		// Give all the walls a random distance
+    		for (Wall wall : walls) {
+    			wall.setDistance(rand.nextDouble());
+    		}
+    		
+    		// Create a new graph with the random edge weights
+    		Graph<Room, Wall> graph = new Graph<>(rooms, walls);
+    
+    		ISet<Wall> wallsToRemove = graph.findMinimumSpanningTree();
+    		
+    		// Reset distances to original
+    		for (Wall wall : walls) {
+    			wall.resetDistanceToOriginal();
+    		}
+    		
+    		return wallsToRemove;
     }
 }
