@@ -15,7 +15,7 @@ public class ArrayDisjointSet<T> implements IDisjointSet<T> {
     private int[] pointers;
     private IDictionary<T, Integer> map;
     private int size;
-    private final int INITIAL_SIZE = 20;
+    private final int initialSIZE = 20;
 
     // However, feel free to add more methods and private helper methods.
     // You will probably need to add one or two more fields in order to
@@ -24,7 +24,7 @@ public class ArrayDisjointSet<T> implements IDisjointSet<T> {
     public ArrayDisjointSet() {
         this.size = 0;
         this.map = new ChainedHashDictionary<T, Integer>();
-        this.pointers = new int[INITIAL_SIZE];
+        this.pointers = new int[initialSIZE];
     }
 
     @Override
@@ -37,7 +37,7 @@ public class ArrayDisjointSet<T> implements IDisjointSet<T> {
     			this.size++;
     		}
     		
-    		if(this.size == this.pointers.length) {
+    		if (this.size == this.pointers.length) {
     			// RESIZE
     			int[] newArray = new int[this.size * 2];
     			for (int i = 0; i < this.size; i++) {
@@ -72,7 +72,7 @@ public class ArrayDisjointSet<T> implements IDisjointSet<T> {
 		int cellVal1 = findSet(item1);
 		int cellVal2 = findSet(item2);
 		
-		if(cellVal1 == cellVal2) {
+		if (cellVal1 == cellVal2) {
 			throw new IllegalArgumentException("Both items in the same set");
 		}
 		

@@ -70,7 +70,7 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
      *                                   present in the 'vertices' list
      */
     
-    private IDictionary<V,IList<E>> ajList;
+    private IDictionary<V, IList<E>> ajList;
     private int numVertices;
     private int numEdges;
     private IList<E> sortedEdges;
@@ -79,7 +79,7 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
        
         this.numVertices = vertices.size();
         this.numEdges = edges.size();
-        this.ajList = new ArrayDictionary<V,IList<E>>();
+        this.ajList = new ArrayDictionary<V, IList<E>>();
         for (V vertex : vertices) {
             ajList.put(vertex, new DoubleLinkedList<E>());
         }
