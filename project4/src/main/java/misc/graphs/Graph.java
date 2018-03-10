@@ -78,7 +78,7 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
     public Graph(IList<V> vertices, IList<E> edges) {
        
         this.numVertices = vertices.size();
-        this.numEdges = edges.size();
+        this.numEdges = 0;
         this.ajList = new ArrayDictionary<V,IList<E>>();
         for (V vertex : vertices) {
             ajList.put(vertex, new DoubleLinkedList<E>());
@@ -89,6 +89,8 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
                     && this.ajList.containsKey(edge.getVertex1()) 
                     && this.ajList.containsKey(edge.getVertex2())) {
                 this.ajList.get(edge.getVertex1()).add(edge);
+                this.ajList.get(edge.getVertex2()).add(edge);
+                this.numEdges++;
             } else {
                 throw new IllegalArgumentException();
             }
@@ -179,49 +181,90 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
      * @throws NoPathExistsException  if there does not exist a path from the start to the end
      */
     public IList<E> findShortestPathBetween(V start, V end) {
-        throw new NotYetImplementedException();
-        IList<E> returnPath = new DoubleLinkedList<E>();
-        IList<V> visited = new DoubleLinkedList<V>();
-        IDictionary<V,VertexInfo> vInfos = new ArrayDictionary<V,VertexInfo>(); 
+       // throw new NotYetImplementedException();
+        IList<E>  returnPath = new DoubleLinkedList<E>();
+        ISet<V> visited = new ChainedHashSet<V>();
+        IDictionary<V,VertexInfo> vInfos = new ChainedHashDictionary<V,VertexInfo>(); 
         IPriorityQueue<VertexInfo> vQueue = new ArrayHeap<VertexInfo>();
         
         if(start == end) {
             return returnPath;
         }
         
+        // Set all costs to infinity, no return path
         for (KVPair<V, IList<E>> pair : ajList) {
             V vertex = pair.getKey();
-            VertexInfo info = new VertexInfo(null, Double.POSITIVE_INFINITY);
+            VertexInfo info = new VertexInfo(vertex,null, Double.POSITIVE_INFINITY);
             vInfos.put(vertex, info);
-            vQueue.insert(info);
         }
-        //Keep Track of Vertices with their costs and return path
-        //Keep Track of known Vertices
-        
-        V current = start;
-        while(visited.size() < numVertices()) {
+        // set starting node to have zero cost
+        VertexInfo startInfo = vInfos.get(start);
+        startInfo.setCost(0.0);
+        vQueue.insert(startInfo);
+  
+        while(vQueue.size() > 0 && !visited.contains(end)) {
+            
+            V current = vQueue.removeMin().getVertex();
+            if(visited.contains(current)) {
+                continue;
+            }
+            
+            // add to visited
+            visited.add(current);
+            
             //update costs of current's children
-            //add updated children to vQueue (remove and re-add)
-            //Get next vertex to visit from vQueue, break if next lowest is infinity, or already visited
+            for (E childEdge : ajList.get(current)) {
+                VertexInfo currentInfo = vInfos.get(current);
+                V childVertex = childEdge.getOtherVertex(current);
+                VertexInfo childInfo = vInfos.get(childVertex);
+                
+                // dont update if we've visited this vertex
+                if (visited.contains(childVertex)) {
+                    continue;
+                }
+                
+                // if cheaper path, update
+                Double newCost = currentInfo.getCost() + childEdge.getWeight();
+                if (newCost < childInfo.getCost()) {
+                    childInfo.setCost(newCost);
+                    childInfo.setPath(childEdge);
+                    vQueue.insert(childInfo);
+                }
+            }   
         }
         
-        //build the list for the return path, if it was found
+      //build the list for the return path, if it was found
+        if(!visited.contains(end)) {
+            throw new NoPathExistsException();
+        }
         
-        
+        E path = vInfos.get(end).getPath();
+        V vCrawl = end;
+        while(path != null) {
+            returnPath.insert(0, path);
+            vCrawl = path.getOtherVertex(vCrawl);
+            path = vInfos.get(vCrawl).getPath();
+        }
+
         return returnPath;
     }
     
     // stores the cost and path for a vertex
     private class VertexInfo implements Comparable<VertexInfo> {
+        private V vertex;
         private E path;
         private Double cost;
         
         
-        VertexInfo(E path,Double cost) {
+        VertexInfo(V vertex,E path,Double cost) {
+            this.vertex = vertex;
             this.path = path;
             this.cost = cost;
         }
         
+        public V getVertex() {
+            return this.vertex;
+        }
         public E getPath() {
             return this.path;
         }
