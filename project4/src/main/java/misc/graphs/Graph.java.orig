@@ -14,7 +14,7 @@ import datastructures.interfaces.IPriorityQueue;
 import datastructures.interfaces.ISet;
 import misc.Searcher;
 import misc.exceptions.NoPathExistsException;
-
+import misc.exceptions.NotYetImplementedException;
 
 /**
  * Represents an undirected, weighted graph, possibly containing self-loops, parallel edges,
@@ -78,8 +78,13 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
     public Graph(IList<V> vertices, IList<E> edges) {
        
         this.numVertices = vertices.size();
+<<<<<<< HEAD
         this.numEdges = 0;
+        this.ajList = new ArrayDictionary<V,IList<E>>();
+=======
+        this.numEdges = edges.size();
         this.ajList = new ArrayDictionary<V, IList<E>>();
+>>>>>>> 800fb40537a7778a67dc89ada501f8e16152884c
         for (V vertex : vertices) {
             ajList.put(vertex, new DoubleLinkedList<E>());
         }
@@ -181,19 +186,20 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
      * @throws NoPathExistsException  if there does not exist a path from the start to the end
      */
     public IList<E> findShortestPathBetween(V start, V end) {
+       // throw new NotYetImplementedException();
         IList<E>  returnPath = new DoubleLinkedList<E>();
         ISet<V> visited = new ChainedHashSet<V>();
-        IDictionary<V, VertexInfo> vInfos = new ChainedHashDictionary<V, VertexInfo>(); 
+        IDictionary<V,VertexInfo> vInfos = new ChainedHashDictionary<V,VertexInfo>(); 
         IPriorityQueue<VertexInfo> vQueue = new ArrayHeap<VertexInfo>();
         
-        if (start == end) {
+        if(start == end) {
             return returnPath;
         }
         
         // Set all costs to infinity, no return path
         for (KVPair<V, IList<E>> pair : ajList) {
             V vertex = pair.getKey();
-            VertexInfo info = new VertexInfo(vertex, null, Double.POSITIVE_INFINITY);
+            VertexInfo info = new VertexInfo(vertex,null, Double.POSITIVE_INFINITY);
             vInfos.put(vertex, info);
         }
         // set starting node to have zero cost
@@ -201,10 +207,10 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
         startInfo.setCost(0.0);
         vQueue.insert(startInfo);
   
-        while (vQueue.size() > 0 && !visited.contains(end)) {
+        while(vQueue.size() > 0 && !visited.contains(end)) {
             
             V current = vQueue.removeMin().getVertex();
-            if (visited.contains(current)) {
+            if(visited.contains(current)) {
                 continue;
             }
             
@@ -232,14 +238,14 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
             }   
         }
         
-        // build the list for the return path, if it was found
-        if (!visited.contains(end)) {
+      //build the list for the return path, if it was found
+        if(!visited.contains(end)) {
             throw new NoPathExistsException();
         }
         
         E path = vInfos.get(end).getPath();
         V vCrawl = end;
-        while (path != null) {
+        while(path != null) {
             returnPath.insert(0, path);
             vCrawl = path.getOtherVertex(vCrawl);
             path = vInfos.get(vCrawl).getPath();
@@ -255,7 +261,7 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
         private Double cost;
         
         
-        VertexInfo(V vertex, E path, Double cost) {
+        VertexInfo(V vertex,E path,Double cost) {
             this.vertex = vertex;
             this.path = path;
             this.cost = cost;
