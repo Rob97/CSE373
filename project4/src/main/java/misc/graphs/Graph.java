@@ -70,7 +70,7 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
      *                                   present in the 'vertices' list
      */
     
-    private IDictionary<V,IList<E>> ajList;
+    private IDictionary<V, IList<E>> ajList;
     private int numVertices;
     private int numEdges;
     private IList<E> sortedEdges;
@@ -79,7 +79,7 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
        
         this.numVertices = vertices.size();
         this.numEdges = 0;
-        this.ajList = new ArrayDictionary<V,IList<E>>();
+        this.ajList = new ArrayDictionary<V, IList<E>>();
         for (V vertex : vertices) {
             ajList.put(vertex, new DoubleLinkedList<E>());
         }
@@ -194,7 +194,7 @@ public class Graph<V, E extends Edge<V> & Comparable<E>> {
         // Set all costs to infinity, no return path
         for (KVPair<V, IList<E>> pair : ajList) {
             V vertex = pair.getKey();
-            VertexInfo info = new VertexInfo(vertex,null, Double.POSITIVE_INFINITY);
+            VertexInfo info = new VertexInfo(vertex, null, Double.POSITIVE_INFINITY);
             vInfos.put(vertex, info);
         }
         // set starting node to have zero cost
